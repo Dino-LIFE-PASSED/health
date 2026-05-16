@@ -12,7 +12,9 @@ app.use(express.static('public'));
 
 function readData() {
   if (!fs.existsSync(DATA_FILE)) return { entries: [], goal: null };
-  return JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
+  const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
+  data.entries = data.entries.map(e => ({ ...e, weight: parseFloat(e.weight) }));
+  return data;
 }
 
 function writeData(data) {

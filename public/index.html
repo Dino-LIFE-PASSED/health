@@ -424,9 +424,9 @@
   }
 
   function renderAll() {
-    renderDashboard();
-    renderHistory();
-    renderGoalPage();
+    try { renderDashboard(); } catch(e) { console.error('dashboard:', e); }
+    try { renderHistory(); } catch(e) { console.error('history:', e); }
+    try { renderGoalPage(); } catch(e) { console.error('goal:', e); }
   }
 
   function renderDashboard() {
@@ -517,7 +517,7 @@
         const next = recent[i + 1];
         return `<tr>
           <td style="color:var(--muted)">${e.date}</td>
-          <td class="td-weight">${e.weight.toFixed(1)} kg</td>
+          <td class="td-weight">${parseFloat(e.weight).toFixed(1)} kg</td>
           <td>${changeHtml(e, next)}</td>
         </tr>`;
       }).join('');
@@ -543,7 +543,7 @@
       const prev = sorted[i + 1];
       return `<tr>
         <td style="color:var(--muted)">${e.date}</td>
-        <td class="td-weight">${e.weight.toFixed(1)}</td>
+        <td class="td-weight">${parseFloat(e.weight).toFixed(1)}</td>
         <td>${changeHtml(e, prev)}</td>
         <td><button class="btn-danger" onclick="deleteEntry('${e.date}')">Delete</button></td>
       </tr>`;
