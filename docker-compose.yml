@@ -1,0 +1,13 @@
+services:
+  weight-tracker:
+    build: .
+    ports:
+      - "3001:3001"
+    environment:
+      - DATA_DIR=/app/data
+    volumes:
+      - weight-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  weight-data:
