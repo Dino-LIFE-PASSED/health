@@ -1,12 +1,21 @@
 services:
   weight-tracker:
     build: .
-    ports:
-      - "3001:3001"
     environment:
       - DATA_DIR=/app/data
     volumes:
       - weight-data:/app/data
+    restart: unless-stopped
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    command: http weight-tracker:3001
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+    ports:
+      - "4040:4040"
+    depends_on:
+      - weight-tracker
     restart: unless-stopped
 
 volumes:
