@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Weight Tracker</title>
+  <title>My Hub</title>
   <link rel="icon" type="image/png" href="/logo.png" />
   <link rel="apple-touch-icon" href="/logo.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="Weight AI" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta name="apple-mobile-web-app-title" content="My Hub" />
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -20,603 +19,142 @@
       --card: #181926;
       --border: #252638;
       --orange: #f97316;
-      --orange-dim: rgba(249,115,22,0.12);
       --purple: #8b5cf6;
-      --purple-dim: rgba(139,92,246,0.15);
-      --green: #22c55e;
-      --red: #ef4444;
       --text: #e2e8f0;
       --muted: #64748b;
-      --mono: 'Share Tech Mono', monospace;
     }
 
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; }
-
-    /* Sidebar */
-    .sidebar {
-      width: 240px;
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
+    }
+
+    header {
+      padding: 24px 32px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 14px;
       background: var(--bg2);
-      border-right: 1px solid var(--border);
+    }
+
+    header img { width: 44px; height: 44px; object-fit: contain; border-radius: 10px; }
+    .header-text h1 { font-size: 1.2rem; font-weight: 600; color: var(--orange); letter-spacing: 0.05em; }
+    .header-text p { font-size: 0.75rem; color: var(--muted); margin-top: 2px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+
+    .section-title {
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .apps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .app-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px 20px;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--text);
       display: flex;
       flex-direction: column;
-      padding: 24px 0;
-      position: fixed;
-      top: 0; left: 0; bottom: 0;
-    }
-
-    .logo {
-      padding: 0 24px 28px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 24px;
-    }
-    .logo-title { font-size: 1.1rem; font-weight: 600; color: var(--orange); letter-spacing: 0.05em; }
-    .logo-sub { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 2px; }
-
-    .menu-label { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; padding: 0 24px; margin-bottom: 8px; }
-
-    .nav-item {
-      display: flex; align-items: center; gap: 12px;
-      padding: 11px 24px;
-      cursor: pointer;
-      color: var(--muted);
-      font-size: 0.875rem;
-      transition: all 0.15s;
-      border-left: 3px solid transparent;
-    }
-    .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.03); }
-    .nav-item.active { color: var(--orange); background: var(--orange-dim); border-left-color: var(--orange); }
-    .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
-
-    .sidebar-footer { margin-top: auto; padding: 20px 24px; border-top: 1px solid var(--border); font-size: 0.75rem; color: var(--muted); }
-
-    /* Main */
-    .main { margin-left: 240px; flex: 1; padding: 32px; min-height: 100vh; }
-
-    .page { display: none; }
-    .page.active { display: block; }
-
-    .page-header { margin-bottom: 28px; }
-    .page-header h1 { font-size: 1.6rem; font-weight: 600; }
-    .page-header p { color: var(--muted); font-size: 0.875rem; margin-top: 4px; }
-
-    /* Stats row */
-    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
-
-    .stat-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-    }
-    .stat-label { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
-    .stat-value { font-family: var(--mono); font-size: 1.9rem; color: var(--orange); }
-    .stat-unit { font-size: 0.8rem; color: var(--muted); margin-left: 4px; }
-    .stat-badge {
-      display: inline-block; margin-top: 8px; font-size: 0.75rem;
-      padding: 2px 8px; border-radius: 20px;
-    }
-    .badge-green { background: rgba(34,197,94,0.15); color: var(--green); }
-    .badge-red { background: rgba(239,68,68,0.15); color: var(--red); }
-    .badge-gray { background: rgba(100,116,139,0.15); color: var(--muted); }
-
-    /* Two col layout */
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-
-    /* Card */
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 22px;
-    }
-    .card-title { font-size: 0.75rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 18px; }
-
-    /* Form */
-    .form-group { margin-bottom: 14px; }
-    .form-group label { display: block; font-size: 0.78rem; color: var(--muted); margin-bottom: 6px; }
-    .form-group input {
-      width: 100%; min-width: 0; padding: 10px 14px;
-      background: var(--bg2); border: 1px solid var(--border);
-      border-radius: 8px; color: var(--text); font-size: 0.95rem;
-      outline: none; transition: border 0.15s;
-      font-family: var(--mono);
-      -webkit-appearance: none;
-      appearance: none;
-    }
-    input[type="date"] { color-scheme: dark; }
-    .form-group input:focus { border-color: var(--orange); }
-
-    .btn {
-      padding: 10px 20px; border: none; border-radius: 8px;
-      font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: all 0.15s;
-    }
-    .btn-primary { background: var(--orange); color: #fff; }
-    .btn-primary:hover { background: #ea6c0a; }
-    .btn-outline {
-      background: transparent; color: var(--muted);
-      border: 1px solid var(--border);
-    }
-    .btn-outline:hover { border-color: var(--orange); color: var(--orange); }
-    .btn-danger { background: rgba(239,68,68,0.15); color: var(--red); border: none; padding: 5px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; }
-    .btn-danger:hover { background: rgba(239,68,68,0.3); }
-    .btn-full { width: 100%; }
-
-    /* Chart */
-    .chart-wrap { position: relative; height: 200px; }
-
-    /* Table */
-    table { width: 100%; border-collapse: collapse; }
-    thead tr { border-bottom: 1px solid var(--border); }
-    th { text-align: left; padding: 10px 12px; font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; }
-    td { padding: 13px 12px; font-size: 0.875rem; border-bottom: 1px solid rgba(37,38,56,0.6); }
-    tr:last-child td { border-bottom: none; }
-    .td-weight { font-family: var(--mono); font-size: 1rem; color: var(--text); }
-    .change-up { color: var(--red); }
-    .change-down { color: var(--green); }
-    .change-zero { color: var(--muted); }
-
-    /* Goal progress */
-    .progress-bar { background: var(--border); border-radius: 99px; height: 6px; margin-top: 10px; overflow: hidden; }
-    .progress-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--orange), var(--purple)); transition: width 0.4s; }
-
-    .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 0.875rem; }
-
-    /* Top header (mobile only) */
-    .top-header {
-      display: none;
-      position: fixed; top: 0; left: 0; right: 0;
-      background: var(--bg2);
-      border-bottom: 1px solid var(--border);
-      z-index: 100;
-      padding: 10px 16px;
-      padding-top: calc(10px + env(safe-area-inset-top));
       align-items: center;
-      gap: 10px;
-    }
-    .top-header img { width: 32px; height: 32px; object-fit: contain; border-radius: 8px; }
-    .top-header-title { font-size: 1rem; font-weight: 600; color: var(--orange); letter-spacing: 0.05em; }
-    .top-header-sub { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
-
-    /* Bottom nav (mobile only) */
-    .bottom-nav {
-      display: none;
-      position: fixed; bottom: 0; left: 0; right: 0;
-      background: var(--bg2);
-      border-top: 1px solid var(--border);
-      z-index: 100;
-      padding: 0;
-      padding-bottom: env(safe-area-inset-bottom);
-    }
-    .bottom-nav-inner {
-      display: flex;
-    }
-    .bottom-nav-item {
-      flex: 1; display: flex; flex-direction: column; align-items: center;
-      gap: 4px; padding: 10px 4px 8px;
-      cursor: pointer; color: var(--muted);
-      font-size: 0.65rem; letter-spacing: 0.03em;
-      transition: color 0.15s;
-      border-top: 2px solid transparent;
+      gap: 14px;
+      transition: border-color 0.15s, transform 0.15s;
       -webkit-tap-highlight-color: transparent;
     }
-    .bottom-nav-item svg { width: 22px; height: 22px; }
-    .bottom-nav-item.active { color: var(--orange); border-top-color: var(--orange); }
 
-    @media (max-width: 768px) {
-      .sidebar { display: none; }
-      .top-header { display: flex; }
-      .bottom-nav { display: block; }
-      .main {
-        margin-left: 0;
-        padding: 20px 16px;
-        padding-top: calc(70px + env(safe-area-inset-top));
-        padding-bottom: calc(70px + env(safe-area-inset-bottom));
-      }
-      .stats-row { grid-template-columns: 1fr 1fr; }
-      .two-col { grid-template-columns: 1fr; }
-      .stat-value { font-size: 1.5rem; }
-      .page-header h1 { font-size: 1.3rem; }
-      .card { padding: 16px; }
-      .form-group input { font-size: 1rem; padding: 13px 14px; }
-      .btn { padding: 13px 20px; font-size: 0.95rem; }
-      td { padding: 12px 8px; font-size: 0.82rem; }
-      th { padding: 8px; font-size: 0.65rem; }
-      .chart-wrap { height: 160px; }
+    .app-card:hover {
+      border-color: var(--orange);
+      transform: translateY(-2px);
+    }
+
+    .app-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+    }
+
+    .app-icon img {
+      width: 64px;
+      height: 64px;
+      object-fit: contain;
+      border-radius: 16px;
+    }
+
+    .app-name { font-size: 0.95rem; font-weight: 500; text-align: center; }
+    .app-desc { font-size: 0.75rem; color: var(--muted); text-align: center; line-height: 1.4; }
+
+    .app-badge {
+      font-size: 0.65rem;
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: rgba(249,115,22,0.15);
+      color: var(--orange);
+    }
+
+    /* Coming soon card */
+    .app-card.coming-soon {
+      opacity: 0.4;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    @media (max-width: 480px) {
+      header { padding: 16px 20px; }
+      .container { padding: 28px 16px; }
+      .apps-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .app-card { padding: 20px 14px; }
+      .app-icon { width: 52px; height: 52px; }
+      .app-icon img { width: 52px; height: 52px; }
     }
   </style>
 </head>
 <body>
 
-<header class="top-header">
-  <img src="/logo.png" alt="logo" />
-  <div>
-    <div class="top-header-title">WEIGHT REC</div>
-    <div class="top-header-sub">Health Tracker</div>
+<header>
+  <img src="/logo.png" alt="Hub" />
+  <div class="header-text">
+    <h1>MY HUB</h1>
+    <p>Personal App Launcher</p>
   </div>
 </header>
 
-<nav class="sidebar">
-  <div class="logo">
-    <img src="/logo.png" alt="Weight Tracker" style="width:48px;height:48px;object-fit:contain;border-radius:10px;display:block;margin-bottom:10px;" />
-    <div class="logo-title">WEIGHT REC</div>
-    <div class="logo-sub">Health Tracker</div>
+<div class="container">
+  <div class="section-title">Apps</div>
+  <div class="apps-grid">
+
+    <a class="app-card" href="/health">
+      <div class="app-icon"><img src="/logo.png" alt="Health" /></div>
+      <div class="app-name">Weight Tracker</div>
+      <div class="app-desc">Track daily weight & progress</div>
+      <span class="app-badge">Active</span>
+    </a>
+
+    <div class="app-card coming-soon">
+      <div class="app-icon" style="background:rgba(139,92,246,0.15);color:#8b5cf6;">+</div>
+      <div class="app-name">Coming Soon</div>
+      <div class="app-desc">More apps will appear here</div>
+    </div>
+
   </div>
+</div>
 
-  <div class="menu-label">Menu</div>
-
-  <div class="nav-item active" onclick="showPage('dashboard')">
-    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-    <span class="nav-label">Dashboard</span>
-  </div>
-
-  <div class="nav-item" onclick="showPage('log')">
-    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-    <span class="nav-label">Log Weight</span>
-  </div>
-
-  <div class="nav-item" onclick="showPage('history')">
-    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-    <span class="nav-label">History</span>
-  </div>
-
-  <div class="nav-item" onclick="showPage('goal')">
-    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>
-    <span class="nav-label">Goal</span>
-  </div>
-
-  <div class="sidebar-footer">Weight Tracker &copy; 2025</div>
-</nav>
-
-<nav class="bottom-nav">
-  <div class="bottom-nav-inner">
-    <div class="bottom-nav-item active" onclick="showPage('dashboard')">
-      <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      Home
-    </div>
-    <div class="bottom-nav-item" onclick="showPage('log')">
-      <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-      Log
-    </div>
-    <div class="bottom-nav-item" onclick="showPage('history')">
-      <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-      History
-    </div>
-    <div class="bottom-nav-item" onclick="showPage('goal')">
-      <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>
-      Goal
-    </div>
-  </div>
-</nav>
-
-<main class="main">
-
-  <!-- Dashboard -->
-  <div class="page active" id="page-dashboard">
-    <div class="page-header">
-      <h1>Dashboard</h1>
-      <p>An overview of your weight tracking</p>
-    </div>
-
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-label">Latest Weight</div>
-        <div><span class="stat-value" id="d-latest">-</span><span class="stat-unit">kg</span></div>
-        <div id="d-latest-badge"></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Goal</div>
-        <div><span class="stat-value" id="d-goal">-</span><span class="stat-unit">kg</span></div>
-        <div id="d-goal-badge"></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Total Entries</div>
-        <div><span class="stat-value" id="d-count">0</span><span class="stat-unit">days</span></div>
-        <div id="d-range-badge"></div>
-      </div>
-    </div>
-
-    <div class="two-col">
-      <div class="card" style="grid-column: 1 / -1;">
-        <div class="card-title">Weight Chart <span style="color:var(--purple);margin-left:12px">&#9632; Weight</span> <span style="color:var(--orange);margin-left:8px">&#9632; Goal</span></div>
-        <div class="chart-wrap"><canvas id="main-chart"></canvas></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Recent Entries</div>
-      <table>
-        <thead><tr><th>Date</th><th>Weight</th><th>Change</th></tr></thead>
-        <tbody id="d-recent"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Log -->
-  <div class="page" id="page-log">
-    <div class="page-header">
-      <h1>Log Weight</h1>
-      <p>Enter your daily weight</p>
-    </div>
-    <div class="card" style="max-width: 420px; overflow: hidden;">
-      <div class="card-title">Log Today's Weight</div>
-      <div class="form-group">
-        <label>Date</label>
-        <input type="date" id="log-date" />
-      </div>
-      <div class="form-group">
-        <label>Weight (kg)</label>
-        <input type="number" id="log-weight" placeholder="0.0" step="0.1" min="1" />
-      </div>
-      <button class="btn btn-primary btn-full" onclick="addEntry()">Save</button>
-    </div>
-  </div>
-
-  <!-- History -->
-  <div class="page" id="page-history">
-    <div class="page-header">
-      <h1>History</h1>
-      <p>All your past weight records</p>
-    </div>
-    <div class="card">
-      <table>
-        <thead>
-          <tr><th>Date</th><th>Weight (kg)</th><th>Change</th><th></th></tr>
-        </thead>
-        <tbody id="history-body"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Goal -->
-  <div class="page" id="page-goal">
-    <div class="page-header">
-      <h1>Weight Goal</h1>
-      <p>Set your goal and track progress</p>
-    </div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:640px;">
-      <div class="card" style="grid-column: 1 / -1;">
-        <div class="card-title">Set Goal</div>
-        <div class="form-group">
-          <label>Target Weight (kg)</label>
-          <input type="number" id="goal-input" placeholder="0.0" step="0.1" min="1" />
-        </div>
-        <button class="btn btn-primary" onclick="setGoal()">Save Goal</button>
-      </div>
-
-      <div class="card" style="grid-column: 1 / -1;">
-        <div class="card-title">Progress</div>
-        <div style="display:flex;justify-content:space-between;font-size:0.85rem;color:var(--muted);margin-bottom:6px;">
-          <span>Starting: <span id="g-start" style="color:var(--text)">-</span> kg</span>
-          <span>Goal: <span id="g-goal" style="color:var(--orange)">-</span> kg</span>
-        </div>
-        <div class="progress-bar"><div class="progress-fill" id="g-progress" style="width:0%"></div></div>
-        <div style="margin-top:14px;font-size:0.875rem;color:var(--muted)">
-          Current: <span id="g-current" style="color:var(--text);font-family:var(--mono)">-</span> kg &nbsp;|&nbsp;
-          Remaining: <span id="g-remaining" style="color:var(--orange);font-family:var(--mono)">-</span> kg
-        </div>
-      </div>
-    </div>
-  </div>
-
-</main>
-
-<script>
-  let allEntries = [];
-  let goalWeight = null;
-  let mainChart;
-
-  function today() {
-    return new Date().toISOString().split('T')[0];
-  }
-
-  document.getElementById('log-date').value = today();
-
-  async function load() {
-    const [entries, goalRes] = await Promise.all([
-      fetch('/api/entries').then(r => r.json()),
-      fetch('/api/goal').then(r => r.json())
-    ]);
-    allEntries = entries;
-    goalWeight = goalRes.goal;
-    renderAll();
-  }
-
-  function renderAll() {
-    try { renderDashboard(); } catch(e) { console.error('dashboard:', e); }
-    try { renderHistory(); } catch(e) { console.error('history:', e); }
-    try { renderGoalPage(); } catch(e) { console.error('goal:', e); }
-  }
-
-  function renderDashboard() {
-    const sorted = [...allEntries].sort((a, b) => new Date(b.date) - new Date(a.date));
-    const latest = sorted[0];
-    const prev = sorted[1];
-
-    // Stats
-    document.getElementById('d-latest').textContent = latest ? latest.weight.toFixed(1) : '-';
-    document.getElementById('d-goal').textContent = goalWeight ? goalWeight.toFixed(1) : '-';
-    document.getElementById('d-count').textContent = allEntries.length;
-
-    if (latest && prev) {
-      const diff = (latest.weight - prev.weight).toFixed(1);
-      const sign = diff > 0 ? '+' : '';
-      const cls = diff > 0 ? 'badge-red' : (diff < 0 ? 'badge-green' : 'badge-gray');
-      document.getElementById('d-latest-badge').innerHTML = `<span class="stat-badge ${cls}">${sign}${diff} kg from prev</span>`;
-    }
-
-    if (goalWeight && latest) {
-      const diff = (latest.weight - goalWeight).toFixed(1);
-      const sign = diff > 0 ? '+' : '';
-      const cls = diff > 0 ? 'badge-red' : 'badge-green';
-      document.getElementById('d-goal-badge').innerHTML = `<span class="stat-badge ${cls}">${sign}${diff} kg</span>`;
-    }
-
-    if (sorted.length > 0) {
-      const oldest = sorted[sorted.length - 1];
-      document.getElementById('d-range-badge').innerHTML = `<span class="stat-badge badge-gray">Since ${oldest.date}</span>`;
-    }
-
-    // Chart
-    const chartData = [...allEntries].sort((a, b) => new Date(a.date) - new Date(b.date));
-    const labels = chartData.map(e => e.date);
-    const weights = chartData.map(e => e.weight);
-
-    const datasets = [{
-      label: 'Weight',
-      data: weights,
-      borderColor: '#8b5cf6',
-      backgroundColor: 'rgba(139,92,246,0.08)',
-      fill: true,
-      tension: 0.4,
-      pointRadius: 4,
-      pointBackgroundColor: '#8b5cf6'
-    }];
-
-    if (goalWeight) {
-      datasets.push({
-        label: 'Goal',
-        data: labels.map(() => goalWeight),
-        borderColor: '#f97316',
-        borderDash: [5, 4],
-        pointRadius: 0,
-        fill: false,
-        tension: 0
-      });
-    }
-
-    if (mainChart) {
-      mainChart.data.labels = labels;
-      mainChart.data.datasets = datasets;
-      mainChart.update('none');
-    } else {
-      mainChart = new Chart(document.getElementById('main-chart'), {
-        type: 'line',
-        data: { labels, datasets },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          animation: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { grid: { color: 'rgba(37,38,56,0.8)' }, ticks: { color: '#64748b', font: { size: 11 } } },
-            y: { grid: { color: 'rgba(37,38,56,0.8)' }, ticks: { color: '#64748b', font: { size: 11 } }, beginAtZero: false }
-          }
-        }
-      });
-    }
-
-    // Recent table (last 5)
-    const recent = sorted.slice(0, 5);
-    const tbody = document.getElementById('d-recent');
-    if (recent.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="3" class="empty-state">No data yet</td></tr>';
-    } else {
-      tbody.innerHTML = recent.map((e, i) => {
-        const next = recent[i + 1];
-        return `<tr>
-          <td style="color:var(--muted)">${e.date}</td>
-          <td class="td-weight">${parseFloat(e.weight).toFixed(1)} kg</td>
-          <td>${changeHtml(e, next)}</td>
-        </tr>`;
-      }).join('');
-    }
-  }
-
-  function changeHtml(e, prev) {
-    if (!prev) return '<span class="change-zero">-</span>';
-    const diff = (e.weight - prev.weight).toFixed(1);
-    const sign = diff > 0 ? '+' : '';
-    const cls = diff > 0 ? 'change-up' : (diff < 0 ? 'change-down' : 'change-zero');
-    return `<span class="${cls}">${sign}${diff} kg</span>`;
-  }
-
-  function renderHistory() {
-    const sorted = [...allEntries].sort((a, b) => new Date(b.date) - new Date(a.date));
-    const tbody = document.getElementById('history-body');
-    if (sorted.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No data yet</td></tr>';
-      return;
-    }
-    tbody.innerHTML = sorted.map((e, i) => {
-      const prev = sorted[i + 1];
-      return `<tr>
-        <td style="color:var(--muted)">${e.date}</td>
-        <td class="td-weight">${parseFloat(e.weight).toFixed(1)}</td>
-        <td>${changeHtml(e, prev)}</td>
-        <td><button class="btn-danger" onclick="deleteEntry('${e.date}')">Delete</button></td>
-      </tr>`;
-    }).join('');
-  }
-
-  function renderGoalPage() {
-    const sorted = [...allEntries].sort((a, b) => new Date(a.date) - new Date(b.date));
-    const first = sorted[0];
-    const last = sorted[sorted.length - 1];
-
-    document.getElementById('g-goal').textContent = goalWeight ? goalWeight.toFixed(1) : '-';
-    document.getElementById('g-start').textContent = first ? first.weight.toFixed(1) : '-';
-    document.getElementById('g-current').textContent = last ? last.weight.toFixed(1) : '-';
-
-    if (goalWeight && first && last) {
-      if (goalWeight) document.getElementById('goal-input').value = goalWeight;
-      const remaining = (last.weight - goalWeight).toFixed(1);
-      document.getElementById('g-remaining').textContent = Math.abs(remaining);
-
-      const total = Math.abs(first.weight - goalWeight);
-      const done = Math.abs(last.weight - goalWeight);
-      const pct = total > 0 ? Math.min(100, Math.round((1 - done / total) * 100)) : 100;
-      document.getElementById('g-progress').style.width = pct + '%';
-    }
-
-    if (goalWeight) document.getElementById('goal-input').value = goalWeight;
-  }
-
-  async function addEntry() {
-    const date = document.getElementById('log-date').value;
-    const weight = document.getElementById('log-weight').value;
-    if (!date || !weight) return alert('Please fill in all fields');
-    await fetch('/api/entries', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ date, weight })
-    });
-    document.getElementById('log-weight').value = '';
-    await load();
-    showPage('dashboard');
-  }
-
-  async function deleteEntry(date) {
-    if (!confirm(`Delete entry for ${date}?`)) return;
-    await fetch(`/api/entries/${date}`, { method: 'DELETE' });
-    load();
-  }
-
-  async function setGoal() {
-    const goal = document.getElementById('goal-input').value;
-    if (!goal) return alert('Please enter a goal weight');
-    await fetch('/api/goal', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ goal })
-    });
-    load();
-  }
-
-  function showPage(name) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.querySelectorAll('.bottom-nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById('page-' + name).classList.add('active');
-    const navMap = { dashboard: 0, log: 1, history: 2, goal: 3 };
-    document.querySelectorAll('.nav-item')[navMap[name]].classList.add('active');
-    document.querySelectorAll('.bottom-nav-item')[navMap[name]].classList.add('active');
-    window.scrollTo(0, 0);
-  }
-
-  load();
-  setInterval(load, 2000);
-</script>
 </body>
 </html>
