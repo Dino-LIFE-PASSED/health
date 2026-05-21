@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Todo</title>
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <link rel="apple-touch-icon" href="/logo.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Todo" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0e1a;
+      --bg2: #13141f;
+      --card: #181926;
+      --border: #252638;
+      --orange: #f97316;
+      --purple: #8b5cf6;
+      --green: #22c55e;
+      --red: #ef4444;
+      --text: #e2e8f0;
+      --muted: #64748b;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg2);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    header a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 1.2rem;
+      line-height: 1;
+      padding: 4px 8px 4px 0;
+    }
+
+    header a:hover { color: var(--text); }
+
+    .header-title { font-size: 1rem; font-weight: 600; color: var(--purple); letter-spacing: 0.05em; }
+
+    .main { flex: 1; max-width: 640px; width: 100%; margin: 0 auto; padding: 24px 16px 40px; }
+
+    /* Add form */
+    .add-form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .add-form input {
+      flex: 1;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: var(--text);
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .add-form input:focus { border-color: var(--purple); }
+    .add-form input::placeholder { color: var(--muted); }
+
+    .btn-add {
+      background: var(--purple);
+      border: none;
+      border-radius: 10px;
+      padding: 12px 20px;
+      color: #fff;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      line-height: 1;
+    }
+
+    .btn-add:hover { opacity: 0.85; }
+
+    /* Filter tabs */
+    .filters {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .filter-btn {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .filter-btn.active {
+      background: rgba(139,92,246,0.15);
+      border-color: var(--purple);
+      color: var(--purple);
+    }
+
+    /* Stats row */
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .btn-clear {
+      background: none;
+      border: none;
+      color: var(--red);
+      font-size: 0.78rem;
+      font-family: inherit;
+      cursor: pointer;
+      padding: 0;
+      opacity: 0.7;
+    }
+
+    .btn-clear:hover { opacity: 1; }
+    .btn-clear:disabled { opacity: 0.2; cursor: default; }
+
+    /* Todo list */
+    .todo-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .todo-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: opacity 0.2s;
+    }
+
+    .todo-item.done { opacity: 0.45; }
+
+    .todo-checkbox {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+
+    .todo-item.done .todo-checkbox {
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    .todo-checkbox::after {
+      content: '';
+      display: none;
+      width: 5px;
+      height: 9px;
+      border: 2px solid #fff;
+      border-top: none;
+      border-left: none;
+      transform: rotate(45deg) translate(-1px, -1px);
+    }
+
+    .todo-item.done .todo-checkbox::after { display: block; }
+
+    .todo-text {
+      flex: 1;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .todo-item.done .todo-text {
+      text-decoration: line-through;
+      color: var(--muted);
+    }
+
+    .btn-delete {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 2px 4px;
+      line-height: 1;
+      opacity: 0.5;
+      flex-shrink: 0;
+    }
+
+    .btn-delete:hover { color: var(--red); opacity: 1; }
+
+    .empty {
+      text-align: center;
+      padding: 48px 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .empty span { display: block; font-size: 2rem; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="/" title="Back to Hub">&#8592;</a>
+  <div class="header-title">TODO</div>
+</header>
+
+<div class="main">
+  <form class="add-form" id="addForm">
+    <input type="text" id="newTodo" placeholder="Add a new task..." autocomplete="off" />
+    <button type="submit" class="btn-add">+</button>
+  </form>
+
+  <div class="filters">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="active">Active</button>
+    <button class="filter-btn" data-filter="done">Done</button>
+  </div>
+
+  <div class="stats">
+    <span id="statsText">0 tasks remaining</span>
+    <button class="btn-clear" id="clearBtn" disabled>Clear completed</button>
+  </div>
+
+  <div class="todo-list" id="todoList"></div>
+</div>
+
+<script>
+  let todos = [];
+  let filter = 'all';
+
+  async function load() {
+    try {
+      const res = await fetch('/api/todos');
+      todos = await res.json();
+      render();
+    } catch (e) {}
+  }
+
+  async function addTodo(text) {
+    await fetch('/api/todos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text })
+    });
+    load();
+  }
+
+  async function toggleTodo(id, done) {
+    await fetch(`/api/todos/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ done: !done })
+    });
+    load();
+  }
+
+  async function deleteTodo(id) {
+    await fetch(`/api/todos/${id}`, { method: 'DELETE' });
+    load();
+  }
+
+  async function clearCompleted() {
+    await fetch('/api/todos/completed', { method: 'DELETE' });
+    load();
+  }
+
+  function render() {
+    const filtered = todos.filter(t => {
+      if (filter === 'active') return !t.done;
+      if (filter === 'done') return t.done;
+      return true;
+    });
+
+    const remaining = todos.filter(t => !t.done).length;
+    const completed = todos.filter(t => t.done).length;
+
+    document.getElementById('statsText').textContent =
+      `${remaining} task${remaining !== 1 ? 's' : ''} remaining`;
+    const clearBtn = document.getElementById('clearBtn');
+    clearBtn.disabled = completed === 0;
+
+    const list = document.getElementById('todoList');
+
+    if (filtered.length === 0) {
+      const msgs = { all: ['📋', 'No tasks yet'], active: ['✅', 'All done!'], done: ['📋', 'Nothing completed yet'] };
+      const [icon, msg] = msgs[filter];
+      list.innerHTML = `<div class="empty"><span>${icon}</span>${msg}</div>`;
+      return;
+    }
+
+    list.innerHTML = filtered.map(t => `
+      <div class="todo-item ${t.done ? 'done' : ''}">
+        <div class="todo-checkbox" onclick="toggleTodo('${t.id}', ${t.done})"></div>
+        <div class="todo-text">${escHtml(t.text)}</div>
+        <button class="btn-delete" onclick="deleteTodo('${t.id}')" title="Delete">&#10005;</button>
+      </div>
+    `).join('');
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  document.getElementById('addForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const input = document.getElementById('newTodo');
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+    addTodo(text);
+  });
+
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      filter = btn.dataset.filter;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      render();
+    });
+  });
+
+  document.getElementById('clearBtn').addEventListener('click', clearCompleted);
+
+  load();
+</script>
+</body>
+</html>

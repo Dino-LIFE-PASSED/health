@@ -177,6 +177,10 @@
     .top-header img { width: 32px; height: 32px; object-fit: contain; border-radius: 8px; }
     .top-header-title { font-size: 1rem; font-weight: 600; color: var(--orange); letter-spacing: 0.05em; }
     .top-header-sub { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+    .top-back-btn { color: var(--muted); text-decoration: none; font-size: 1.2rem; line-height: 1; padding: 4px 8px 4px 0; }
+    .top-back-btn:hover { color: var(--text); }
+    .sidebar-back-link { display: flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 0.8rem; padding: 10px 24px; border-top: 1px solid var(--border); margin-top: 8px; transition: color 0.15s; }
+    .sidebar-back-link:hover { color: var(--orange); }
 
     /* Bottom nav (mobile only) */
     .bottom-nav {
@@ -229,6 +233,7 @@
 <body>
 
 <header class="top-header">
+  <a href="/" class="top-back-btn" title="Back to Hub">&#8592;</a>
   <img src="/logo.png" alt="logo" />
   <div>
     <div class="top-header-title">WEIGHT REC</div>
@@ -266,6 +271,10 @@
   </div>
 
   <div class="sidebar-footer">Weight Tracker &copy; 2025</div>
+  <a href="/" class="sidebar-back-link">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M5 12l7-7M5 12l7 7"/></svg>
+    Back to Hub
+  </a>
 </nav>
 
 <nav class="bottom-nav">
