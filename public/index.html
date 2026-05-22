@@ -4,28 +4,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Hub</title>
-  <link rel="icon" type="image/png" href="/logo.png" />
-  <link rel="apple-touch-icon" href="/logo.png" />
+  <link rel="icon" type="image/png" href="/logo.png?v=2" />
+  <link rel="apple-touch-icon" href="/logo.png?v=2" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="My Hub" />
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap');
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0d0e1a;
-      --bg2: #13141f;
-      --card: #181926;
-      --border: #252638;
+      --bg: #f8f8f8;
+      --bg2: #ffffff;
+      --card: #ffffff;
+      --border: #e5e5e5;
       --orange: #f97316;
-      --purple: #8b5cf6;
-      --text: #e2e8f0;
-      --muted: #64748b;
+      --purple: #1a2332;
+      --text: #1a2332;
+      --muted: #9ca3af;
     }
 
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
@@ -40,7 +40,7 @@
       background: var(--bg2);
     }
 
-    header img { width: 44px; height: 44px; object-fit: contain; border-radius: 10px; }
+    header img { width: 44px; height: 44px; object-fit: contain; border-radius: 0; }
     .header-text h1 { font-size: 1.2rem; font-weight: 600; color: var(--orange); letter-spacing: 0.05em; }
     .header-text p { font-size: 0.75rem; color: var(--muted); margin-top: 2px; letter-spacing: 0.08em; text-transform: uppercase; }
 
@@ -62,8 +62,10 @@
 
     .app-card {
       background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
+      border-top: 1px dashed var(--border);
+      border-bottom: 1px dashed var(--border);
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
       padding: 24px 20px;
       cursor: pointer;
       text-decoration: none;
@@ -129,7 +131,6 @@
 <body>
 
 <header>
-  <img src="/logo.png" alt="Hub" />
   <div class="header-text">
     <h1>MY HUB</h1>
     <p>Personal App Launcher</p>
@@ -141,21 +142,22 @@
   <div class="apps-grid">
 
     <a class="app-card" href="/health">
-      <div class="app-icon"><img src="/logo.png" alt="Health" /></div>
+      <div class="app-icon"><img src="/wtr_logo.png" alt="Health" /></div>
       <div class="app-name">Weight Tracker</div>
       <div class="app-desc">Track daily weight & progress</div>
       <span class="app-badge">Active</span>
     </a>
 
     <a class="app-card" href="/todo">
-      <div class="app-icon" style="background:rgba(139,92,246,0.15);font-size:2rem;">✅</div>
+      <div class="app-icon"><img src="/tdo_logo.png" alt="Todo" /></div>
       <div class="app-name">Todo</div>
       <div class="app-desc">Manage tasks & to-dos</div>
-      <span class="app-badge" style="background:rgba(139,92,246,0.15);color:#8b5cf6;">Active</span>
+      <span class="app-badge">Active</span>
     </a>
 
   </div>
 </div>
+
 
 </body>
 </html>

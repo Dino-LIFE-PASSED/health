@@ -4,30 +4,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Todo</title>
-  <link rel="icon" type="image/png" href="/logo.png" />
-  <link rel="apple-touch-icon" href="/logo.png" />
+  <link rel="icon" type="image/png" href="/tdo_logo.png?v=2" />
+  <link rel="apple-touch-icon" href="/tdo_logo.png?v=2" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Todo" />
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap');
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0d0e1a;
-      --bg2: #13141f;
-      --card: #181926;
-      --border: #252638;
+      --bg: #f8f8f8;
+      --bg2: #ffffff;
+      --card: #ffffff;
+      --border: #e5e5e5;
       --orange: #f97316;
-      --purple: #8b5cf6;
+      --purple: #f97316;
       --green: #22c55e;
       --red: #ef4444;
-      --text: #e2e8f0;
-      --muted: #64748b;
+      --text: #1a2332;
+      --muted: #9ca3af;
     }
 
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
@@ -37,7 +37,7 @@
 
     header {
       padding: 18px 24px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px dashed var(--border);
       background: var(--bg2);
       display: flex;
       align-items: center;
@@ -69,7 +69,6 @@
       flex: 1;
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 10px;
       padding: 12px 16px;
       color: var(--text);
       font-size: 0.95rem;
@@ -84,9 +83,8 @@
     .btn-add {
       background: var(--purple);
       border: none;
-      border-radius: 10px;
       padding: 12px 20px;
-      color: #fff;
+      color: #000;
       font-size: 1.2rem;
       cursor: pointer;
       transition: opacity 0.15s;
@@ -104,7 +102,7 @@
 
     .filter-btn {
       padding: 6px 14px;
-      border-radius: 20px;
+      border-radius: 0;
       border: 1px solid var(--border);
       background: transparent;
       color: var(--muted);
@@ -115,9 +113,9 @@
     }
 
     .filter-btn.active {
-      background: rgba(139,92,246,0.15);
-      border-color: var(--purple);
-      color: var(--purple);
+      background: rgba(249,115,22,0.1);
+      border-color: var(--orange);
+      color: var(--orange);
     }
 
     /* Stats row */
@@ -149,8 +147,10 @@
 
     .todo-item {
       background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
+      border-top: 1px dashed var(--border);
+      border-bottom: 1px dashed var(--border);
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
       padding: 14px 16px;
       display: flex;
       align-items: center;
@@ -163,7 +163,6 @@
     .todo-checkbox {
       width: 20px;
       height: 20px;
-      border-radius: 50%;
       border: 2px solid var(--border);
       background: transparent;
       cursor: pointer;

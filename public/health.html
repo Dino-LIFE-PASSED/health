@@ -4,33 +4,33 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Weight Tracker</title>
-  <link rel="icon" type="image/png" href="/logo.png" />
-  <link rel="apple-touch-icon" href="/logo.png" />
+  <link rel="icon" type="image/png" href="/wtr_logo.png?v=2" />
+  <link rel="apple-touch-icon" href="/wtr_logo.png?v=2" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Weight AI" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap');
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0d0e1a;
-      --bg2: #13141f;
-      --card: #181926;
-      --border: #252638;
+      --bg: #f8f8f8;
+      --bg2: #ffffff;
+      --card: #ffffff;
+      --border: #e5e5e5;
       --orange: #f97316;
-      --orange-dim: rgba(249,115,22,0.12);
-      --purple: #8b5cf6;
-      --purple-dim: rgba(139,92,246,0.15);
+      --orange-dim: rgba(249,115,22,0.08);
+      --purple: #1a2332;
+      --purple-dim: rgba(26,35,50,0.06);
       --green: #22c55e;
       --red: #ef4444;
-      --text: #e2e8f0;
-      --muted: #64748b;
-      --mono: 'Share Tech Mono', monospace;
+      --text: #1a2332;
+      --muted: #9ca3af;
+      --mono: 'JetBrains Mono', 'Courier New', monospace;
     }
 
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; }
+    body { font-family: var(--mono); background: var(--bg); color: var(--text); min-height: 100vh; display: flex; }
 
     /* Sidebar */
     .sidebar {
@@ -47,7 +47,7 @@
 
     .logo {
       padding: 0 24px 28px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px dashed var(--border);
       margin-bottom: 24px;
     }
     .logo-title { font-size: 1.1rem; font-weight: 600; color: var(--orange); letter-spacing: 0.05em; }
@@ -64,11 +64,13 @@
       transition: all 0.15s;
       border-left: 3px solid transparent;
     }
-    .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+    .nav-item:hover { color: var(--text); background: rgba(0,0,0,0.04); }
     .nav-item.active { color: var(--orange); background: var(--orange-dim); border-left-color: var(--orange); }
     .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
 
-    .sidebar-footer { margin-top: auto; padding: 20px 24px; border-top: 1px solid var(--border); font-size: 0.75rem; color: var(--muted); }
+    .sidebar-footer { margin-top: auto; padding: 20px 24px; border-top: 1px dashed var(--border); font-size: 0.75rem; color: var(--muted); }
+    .sidebar-back-link { display: flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 0.8rem; padding: 10px 24px; border-top: 1px dashed var(--border); margin-top: 8px; transition: color 0.15s; }
+    .sidebar-back-link:hover { color: var(--orange); }
 
     /* Main */
     .main { margin-left: 240px; flex: 1; padding: 32px; min-height: 100vh; }
@@ -85,20 +87,19 @@
 
     .stat-card {
       background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
+      border-top: 1px dashed var(--border);
+      border-bottom: 1px dashed var(--border);
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
       padding: 20px;
     }
     .stat-label { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
     .stat-value { font-family: var(--mono); font-size: 1.9rem; color: var(--orange); }
     .stat-unit { font-size: 0.8rem; color: var(--muted); margin-left: 4px; }
-    .stat-badge {
-      display: inline-block; margin-top: 8px; font-size: 0.75rem;
-      padding: 2px 8px; border-radius: 20px;
-    }
-    .badge-green { background: rgba(34,197,94,0.15); color: var(--green); }
-    .badge-red { background: rgba(239,68,68,0.15); color: var(--red); }
-    .badge-gray { background: rgba(100,116,139,0.15); color: var(--muted); }
+    .stat-badge { display: inline-block; margin-top: 8px; font-size: 0.75rem; padding: 2px 8px; }
+    .badge-green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .badge-red { background: rgba(239,68,68,0.12); color: var(--red); }
+    .badge-gray { background: rgba(100,116,139,0.1); color: var(--muted); }
 
     /* Two col layout */
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
@@ -106,8 +107,10 @@
     /* Card */
     .card {
       background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
+      border-top: 1px dashed var(--border);
+      border-bottom: 1px dashed var(--border);
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
       padding: 22px;
     }
     .card-title { font-size: 0.75rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 18px; }
@@ -117,29 +120,27 @@
     .form-group label { display: block; font-size: 0.78rem; color: var(--muted); margin-bottom: 6px; }
     .form-group input {
       width: 100%; min-width: 0; padding: 10px 14px;
-      background: var(--bg2); border: 1px solid var(--border);
-      border-radius: 8px; color: var(--text); font-size: 0.95rem;
+      background: var(--bg); border: 1px solid var(--border);
+      color: var(--text); font-size: 0.95rem;
       outline: none; transition: border 0.15s;
       font-family: var(--mono);
       -webkit-appearance: none;
       appearance: none;
     }
-    input[type="date"] { color-scheme: dark; }
+    input[type="date"] { color-scheme: light; }
     .form-group input:focus { border-color: var(--orange); }
 
     .btn {
-      padding: 10px 20px; border: none; border-radius: 8px;
+      padding: 10px 20px; border: none;
       font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: all 0.15s;
+      font-family: var(--mono);
     }
-    .btn-primary { background: var(--orange); color: #fff; }
-    .btn-primary:hover { background: #ea6c0a; }
-    .btn-outline {
-      background: transparent; color: var(--muted);
-      border: 1px solid var(--border);
-    }
+    .btn-primary { background: var(--orange); color: #000; }
+    .btn-primary:hover { background: #ea580c; }
+    .btn-outline { background: transparent; color: var(--muted); border: 1px solid var(--border); }
     .btn-outline:hover { border-color: var(--orange); color: var(--orange); }
-    .btn-danger { background: rgba(239,68,68,0.15); color: var(--red); border: none; padding: 5px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; }
-    .btn-danger:hover { background: rgba(239,68,68,0.3); }
+    .btn-danger { background: rgba(239,68,68,0.12); color: var(--red); border: none; padding: 5px 12px; font-size: 0.8rem; cursor: pointer; font-family: var(--mono); }
+    .btn-danger:hover { background: rgba(239,68,68,0.25); }
     .btn-full { width: 100%; }
 
     /* Chart */
@@ -147,9 +148,9 @@
 
     /* Table */
     table { width: 100%; border-collapse: collapse; }
-    thead tr { border-bottom: 1px solid var(--border); }
+    thead tr { border-bottom: 1px dashed var(--border); }
     th { text-align: left; padding: 10px 12px; font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; }
-    td { padding: 13px 12px; font-size: 0.875rem; border-bottom: 1px solid rgba(37,38,56,0.6); }
+    td { padding: 13px 12px; font-size: 0.875rem; border-bottom: 1px solid rgba(229,229,229,0.8); }
     tr:last-child td { border-bottom: none; }
     .td-weight { font-family: var(--mono); font-size: 1rem; color: var(--text); }
     .change-up { color: var(--red); }
@@ -157,8 +158,8 @@
     .change-zero { color: var(--muted); }
 
     /* Goal progress */
-    .progress-bar { background: var(--border); border-radius: 99px; height: 6px; margin-top: 10px; overflow: hidden; }
-    .progress-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--orange), var(--purple)); transition: width 0.4s; }
+    .progress-bar { background: var(--border); height: 4px; margin-top: 10px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--orange); transition: width 0.4s; }
 
     .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 0.875rem; }
 
@@ -167,34 +168,30 @@
       display: none;
       position: fixed; top: 0; left: 0; right: 0;
       background: var(--bg2);
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px dashed var(--border);
       z-index: 100;
       padding: 10px 16px;
       padding-top: calc(10px + env(safe-area-inset-top));
       align-items: center;
       gap: 10px;
     }
-    .top-header img { width: 32px; height: 32px; object-fit: contain; border-radius: 8px; }
+    .top-header img { width: 32px; height: 32px; object-fit: contain; }
     .top-header-title { font-size: 1rem; font-weight: 600; color: var(--orange); letter-spacing: 0.05em; }
     .top-header-sub { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
     .top-back-btn { color: var(--muted); text-decoration: none; font-size: 1.2rem; line-height: 1; padding: 4px 8px 4px 0; }
     .top-back-btn:hover { color: var(--text); }
-    .sidebar-back-link { display: flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 0.8rem; padding: 10px 24px; border-top: 1px solid var(--border); margin-top: 8px; transition: color 0.15s; }
-    .sidebar-back-link:hover { color: var(--orange); }
 
     /* Bottom nav (mobile only) */
     .bottom-nav {
       display: none;
       position: fixed; bottom: 0; left: 0; right: 0;
       background: var(--bg2);
-      border-top: 1px solid var(--border);
+      border-top: 1px dashed var(--border);
       z-index: 100;
       padding: 0;
       padding-bottom: env(safe-area-inset-bottom);
     }
-    .bottom-nav-inner {
-      display: flex;
-    }
+    .bottom-nav-inner { display: flex; }
     .bottom-nav-item {
       flex: 1; display: flex; flex-direction: column; align-items: center;
       gap: 4px; padding: 10px 4px 8px;
@@ -234,7 +231,7 @@
 
 <header class="top-header">
   <a href="/" class="top-back-btn" title="Back to Hub">&#8592;</a>
-  <img src="/logo.png" alt="logo" />
+  <img src="/wtr_logo.png" alt="logo" />
   <div>
     <div class="top-header-title">WEIGHT REC</div>
     <div class="top-header-sub">Health Tracker</div>
@@ -243,7 +240,7 @@
 
 <nav class="sidebar">
   <div class="logo">
-    <img src="/logo.png" alt="Weight Tracker" style="width:48px;height:48px;object-fit:contain;border-radius:10px;display:block;margin-bottom:10px;" />
+    <img src="/wtr_logo.png" alt="Weight Tracker" style="width:48px;height:48px;object-fit:contain;border-radius:10px;display:block;margin-bottom:10px;" />
     <div class="logo-title">WEIGHT REC</div>
     <div class="logo-sub">Health Tracker</div>
   </div>
@@ -475,12 +472,12 @@
     const datasets = [{
       label: 'Weight',
       data: weights,
-      borderColor: '#8b5cf6',
-      backgroundColor: 'rgba(139,92,246,0.08)',
+      borderColor: '#1a2332',
+      backgroundColor: 'rgba(26,35,50,0.05)',
       fill: true,
       tension: 0.4,
       pointRadius: 4,
-      pointBackgroundColor: '#8b5cf6'
+      pointBackgroundColor: '#1a2332'
     }];
 
     if (goalWeight) {
@@ -509,8 +506,8 @@
           animation: false,
           plugins: { legend: { display: false } },
           scales: {
-            x: { grid: { color: 'rgba(37,38,56,0.8)' }, ticks: { color: '#64748b', font: { size: 11 } } },
-            y: { grid: { color: 'rgba(37,38,56,0.8)' }, ticks: { color: '#64748b', font: { size: 11 } }, beginAtZero: false }
+            x: { grid: { color: 'rgba(229,229,229,0.8)' }, ticks: { color: '#9ca3af', font: { size: 11 } } },
+            y: { grid: { color: 'rgba(229,229,229,0.8)' }, ticks: { color: '#9ca3af', font: { size: 11 } }, beginAtZero: false }
           }
         }
       });
