@@ -5,7 +5,7 @@ const chatsService = require('../services/chatsService');
 const todosService = require('../services/todosService');
 const dataService = require('../services/dataService');
 
-const tools = [{
+const functionTools = [{
   functionDeclarations: [
     {
       name: 'get_todos',
@@ -53,6 +53,12 @@ const tools = [{
     }
   ]
 }];
+
+const searchTools = [{ googleSearch: {} }];
+
+function needsSearch(message) {
+  return !/todo|task|weight|น้ำหนัก|เพิ่ม|บันทึก|ลบ|log|done|เสร็จ|check|งาน/i.test(message);
+}
 
 function executeTool(name, args) {
   if (name === 'get_todos') return { todos: todosService.read() };
@@ -148,11 +154,12 @@ router.post('/sessions/:id/message', async (req, res) => {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const today = new Date().toISOString().split('T')[0];
 
+    const useSearch = needsSearch(message);
     const model = genAI.getGenerativeModel({
       model: 'gemini-2.5-flash',
-      tools,
+      tools: useSearch ? searchTools : functionTools,
       systemInstruction: `You are a helpful personal assistant integrated with the user's Hub app.
-You have access to their todo list and weight tracking data via tools.
+${useSearch ? '' : 'You have access to their todo list and weight tracking data via tools.'}
 Today's date is ${today}.
 Be concise and friendly. When you add a todo or log weight, confirm what you did.
 When listing todos, show them with checkmarks for done items.
