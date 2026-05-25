@@ -7,7 +7,7 @@ const chatRouter = require('./routes/chat');
 
 const app = express();
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, '../public')));
 
 app.get('/health', (req, res) => res.sendFile(path.join(__dirname, '../public/health.html')));

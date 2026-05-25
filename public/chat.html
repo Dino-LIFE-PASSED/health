@@ -352,6 +352,70 @@
     .input-bar input::placeholder { color: var(--muted); }
     .input-bar input:disabled { opacity: 0.5; }
 
+    .btn-attach {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 12px 13px;
+      color: var(--muted);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .btn-attach:hover { border-color: var(--orange); color: var(--orange); }
+    .btn-attach:disabled { opacity: 0.4; cursor: default; }
+
+    .img-preview {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px dashed var(--border);
+      margin-bottom: 4px;
+    }
+    .img-preview.visible { display: flex; }
+    .img-thumb {
+      width: 52px;
+      height: 52px;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .img-preview-name {
+      font-size: 0.72rem;
+      color: var(--muted);
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .img-clear {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      flex-shrink: 0;
+      font-family: inherit;
+    }
+    .img-clear:hover { color: #ef4444; }
+
+    .msg-img {
+      max-width: 220px;
+      max-height: 220px;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      display: block;
+      margin-bottom: 6px;
+    }
+    .msg-img-placeholder {
+      font-size: 0.75rem;
+      color: var(--muted);
+      padding: 6px 0;
+    }
+
     .btn-send {
       background: var(--orange);
       border: none;
@@ -364,6 +428,125 @@
     }
     .btn-send:hover { opacity: 0.85; }
     .btn-send:disabled { opacity: 0.4; cursor: default; }
+
+    .btn-settings {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 6px 8px;
+      transition: color 0.15s;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .btn-settings:hover { color: var(--text); }
+
+    /* Settings Modal */
+    .settings-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .settings-modal.visible { display: flex; }
+
+    .settings-box {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      width: 100%;
+      max-width: 520px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .settings-header {
+      padding: 14px 18px;
+      border-bottom: 1px dashed var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .settings-title { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+    .settings-close {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 0.85rem;
+      cursor: pointer;
+      padding: 2px 6px;
+      font-family: inherit;
+    }
+    .settings-close:hover { color: var(--text); }
+
+    .settings-body { padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+    .settings-label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 6px;
+    }
+    .settings-textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      color: var(--text);
+      font-size: 0.85rem;
+      font-family: inherit;
+      outline: none;
+      resize: vertical;
+      min-height: 130px;
+      transition: border-color 0.15s;
+      line-height: 1.6;
+    }
+    .settings-textarea:focus { border-color: var(--orange); }
+    .settings-textarea::placeholder { color: var(--muted); }
+    .settings-hint { font-size: 0.7rem; color: var(--muted); line-height: 1.55; }
+
+    .settings-footer {
+      padding: 12px 18px;
+      border-top: 1px dashed var(--border);
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    .btn-reset {
+      background: none;
+      border: 1px solid var(--border);
+      padding: 9px 16px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-reset:hover { border-color: var(--text); color: var(--text); }
+    .btn-save {
+      background: var(--orange);
+      border: none;
+      padding: 9px 18px;
+      color: #fff;
+      font-size: 0.78rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-save:hover { opacity: 0.85; }
+
+    /* Streaming cursor */
+    .msg-bubble.streaming::after {
+      content: '▋';
+      opacity: 1;
+      animation: cur-blink 0.7s step-end infinite;
+    }
+    @keyframes cur-blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
     /* Sidebar overlay (mobile) */
     .sidebar-overlay {
@@ -406,6 +589,7 @@
   <div class="sidebar-top">
     <a href="/" class="btn-hub">&#8592; Hub</a>
     <button class="btn-new" onclick="goLanding()">+ New Chat</button>
+    <button class="btn-settings" onclick="openSettings()" title="Settings">&#9881;</button>
   </div>
   <div class="chat-list" id="chatList"></div>
 </nav>
@@ -442,7 +626,14 @@
       </div>
     </div>
     <div class="input-bar">
+      <input type="file" id="fileInput" accept="image/*" style="display:none" />
+      <div class="img-preview" id="imgPreview">
+        <img id="imgThumb" class="img-thumb" alt="" />
+        <span class="img-preview-name" id="imgName"></span>
+        <button type="button" class="img-clear" onclick="clearImage()">&#10005; Remove</button>
+      </div>
       <form id="chatForm">
+        <button type="button" class="btn-attach" id="attachBtn" onclick="document.getElementById('fileInput').click()" title="Attach image">&#128206;</button>
         <input type="text" id="msgInput" placeholder="Ask me anything..." autocomplete="off" />
         <button type="submit" class="btn-send" id="sendBtn">&#10148;</button>
       </form>
@@ -451,8 +642,32 @@
 
 </div>
 
+<div class="settings-modal" id="settingsModal" onclick="closeSettings()">
+  <div class="settings-box" onclick="event.stopPropagation()">
+    <div class="settings-header">
+      <span class="settings-title">&#9881; Settings</span>
+      <button class="settings-close" onclick="closeSettings()">&#10005;</button>
+    </div>
+    <div class="settings-body">
+      <div>
+        <label class="settings-label">System Prompt</label>
+        <textarea class="settings-textarea" id="systemPromptInput"
+          placeholder="e.g. You are a fitness coach named Alex. Be motivating and straight to the point.
+
+Leave empty to use the default personality."></textarea>
+        <div class="settings-hint">Customizes the AI's personality. Tool access (todos, weight) and today's date are always appended automatically.</div>
+      </div>
+    </div>
+    <div class="settings-footer">
+      <button class="btn-reset" onclick="resetPrompt()">Reset to default</button>
+      <button class="btn-save" onclick="saveSettings()">Save</button>
+    </div>
+  </div>
+</div>
+
 <script>
   let currentId = null;
+  let selectedImage = null; // { data: base64, mimeType, dataUrl, name }
 
   const landingEl  = document.getElementById('landing');
   const chatViewEl = document.getElementById('chatView');
@@ -461,6 +676,7 @@
   const typingEl   = document.getElementById('typing');
   const msgInput   = document.getElementById('msgInput');
   const sendBtn    = document.getElementById('sendBtn');
+  const attachBtn  = document.getElementById('attachBtn');
   const chatListEl = document.getElementById('chatList');
   const mobTitleEl = document.getElementById('mobTitle');
   const sidebarEl  = document.getElementById('sidebar');
@@ -537,7 +753,7 @@
     Array.from(messagesEl.querySelectorAll('.msg')).forEach(m => m.remove());
 
     // Render history
-    session.messages.forEach(m => addMsgEl(m.role, m.content));
+    session.messages.forEach(m => addMsgEl(m.role, m.content, null, m.hasImage));
 
     chatHeaderEl.textContent = session.title;
     mobTitleEl.textContent = session.title;
@@ -553,13 +769,17 @@
 
   // ── Messages ──
 
-  function addMsgEl(role, text) {
+  function addMsgEl(role, text, imageDataUrl = null, hadImage = false) {
     const div = document.createElement('div');
     div.className = `msg ${role === 'user' ? 'user' : 'ai'}`;
-    div.innerHTML = `
-      <div class="msg-label">${role === 'user' ? 'You' : 'AI'}</div>
-      <div class="msg-bubble">${formatText(text)}</div>
-    `;
+    let imgHtml = '';
+    if (imageDataUrl) {
+      imgHtml = `<img src="${imageDataUrl}" class="msg-img" alt="image" />`;
+    } else if (hadImage) {
+      imgHtml = `<div class="msg-img-placeholder">&#128247; Image</div>`;
+    }
+    const textHtml = text ? `<div class="msg-bubble">${formatText(text)}</div>` : '';
+    div.innerHTML = `<div class="msg-label">${role === 'user' ? 'You' : 'AI'}</div>${imgHtml}${textHtml}`;
     messagesEl.insertBefore(div, typingEl);
     messagesEl.scrollTop = messagesEl.scrollHeight;
   }
@@ -568,28 +788,116 @@
     typingEl.classList.toggle('visible', on);
     sendBtn.disabled = on;
     msgInput.disabled = on;
+    attachBtn.disabled = on;
     if (on) messagesEl.scrollTop = messagesEl.scrollHeight;
   }
 
-  async function sendMessage(sessionId, text) {
+  // ── Image upload ──
+
+  document.getElementById('fileInput').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      selectedImage = { data: reader.result.split(',')[1], mimeType: file.type, dataUrl: reader.result, name: file.name };
+      document.getElementById('imgThumb').src = reader.result;
+      document.getElementById('imgName').textContent = file.name;
+      document.getElementById('imgPreview').classList.add('visible');
+      msgInput.placeholder = 'Add a message (optional)...';
+      msgInput.focus();
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  });
+
+  function clearImage() {
+    selectedImage = null;
+    document.getElementById('imgPreview').classList.remove('visible');
+    document.getElementById('imgThumb').src = '';
+    document.getElementById('imgName').textContent = '';
+    msgInput.placeholder = 'Ask me anything...';
+  }
+
+  async function sendMessage(sessionId, text, image = null) {
     setLoading(true);
+    let aiBubble = null;
+    let accText = '';
+
     try {
+      const body = { message: text };
+      if (image) { body.imageData = image.data; body.imageMimeType = image.mimeType; }
+
       const res = await fetch(`/api/chat/sessions/${sessionId}/message`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text })
+        body: JSON.stringify(body)
       });
-      const data = await res.json();
-      setLoading(false);
-      if (!res.ok) { addMsgEl('ai', 'Error: ' + (data.error || 'Something went wrong')); return; }
-      addMsgEl('ai', data.text);
 
-      // Refresh title after first message
-      const updated = await fetch(`/api/chat/sessions/${sessionId}`).then(r => r.json());
-      chatHeaderEl.textContent = updated.title;
-      mobTitleEl.textContent = updated.title;
-      loadSessions();
-    } catch (err) {
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        setLoading(false);
+        addMsgEl('ai', 'Error: ' + (err.error || 'Something went wrong'));
+        return;
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
+
+        const lines = buf.split('\n');
+        buf = lines.pop();
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          let evt;
+          try { evt = JSON.parse(line.slice(6)); } catch { continue; }
+
+          if (evt.chunk) {
+            if (!aiBubble) {
+              // first chunk — hide typing dots, create streaming bubble
+              typingEl.classList.remove('visible');
+              const div = document.createElement('div');
+              div.className = 'msg ai';
+              div.innerHTML = '<div class="msg-label">AI</div><div class="msg-bubble streaming"></div>';
+              messagesEl.insertBefore(div, typingEl);
+              aiBubble = div.querySelector('.msg-bubble');
+            }
+            accText += evt.chunk;
+            aiBubble.textContent = accText;
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+          }
+
+          if (evt.thinking) {
+            // tool call in progress — show dots again
+            typingEl.classList.add('visible');
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+          }
+
+          if (evt.done) {
+            if (aiBubble) {
+              aiBubble.classList.remove('streaming');
+              aiBubble.innerHTML = formatText(accText);
+            }
+            if (evt.title) {
+              chatHeaderEl.textContent = evt.title;
+              mobTitleEl.textContent = evt.title;
+            }
+            setLoading(false);
+            loadSessions();
+          }
+
+          if (evt.error) {
+            setLoading(false);
+            addMsgEl('ai', 'Error: ' + evt.error);
+          }
+        }
+      }
+    } catch {
       setLoading(false);
       addMsgEl('ai', 'Connection error. Please check the server.');
     }
@@ -632,11 +940,57 @@
   document.getElementById('chatForm').addEventListener('submit', e => {
     e.preventDefault();
     const text = msgInput.value.trim();
-    if (!text || !currentId || sendBtn.disabled) return;
+    const image = selectedImage;
+    if (!text && !image) return;
+    if (!currentId || sendBtn.disabled) return;
     msgInput.value = '';
-    addMsgEl('user', text);
-    sendMessage(currentId, text);
+    clearImage();
+    addMsgEl('user', text, image ? image.dataUrl : null);
+    sendMessage(currentId, text, image);
   });
+
+  // ── Settings ──
+
+  async function openSettings() {
+    document.getElementById('settingsModal').classList.add('visible');
+    try {
+      const res = await fetch('/api/chat/settings');
+      const data = await res.json();
+      document.getElementById('systemPromptInput').value = data.systemPrompt || '';
+    } catch {
+      // show modal anyway, textarea stays empty
+    }
+  }
+
+  function closeSettings() {
+    document.getElementById('settingsModal').classList.remove('visible');
+  }
+
+  function resetPrompt() {
+    document.getElementById('systemPromptInput').value = '';
+  }
+
+  async function saveSettings() {
+    const systemPrompt = document.getElementById('systemPromptInput').value.trim();
+    const btn = document.querySelector('.btn-save');
+    btn.textContent = 'Saving...';
+    btn.disabled = true;
+    try {
+      const res = await fetch('/api/chat/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ systemPrompt })
+      });
+      if (!res.ok) throw new Error('Failed');
+      btn.textContent = 'Saved ✓';
+      setTimeout(closeSettings, 600);
+    } catch {
+      btn.textContent = 'Error — restart server?';
+      btn.style.background = '#ef4444';
+    } finally {
+      setTimeout(() => { btn.textContent = 'Save'; btn.disabled = false; btn.style.background = ''; }, 1800);
+    }
+  }
 
   // ── Init ──
   loadSessions();

@@ -4,6 +4,25 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const chatsService = require('../services/chatsService');
 const todosService = require('../services/todosService');
 const dataService = require('../services/dataService');
+const settingsService = require('../services/settingsService');
+
+async function withRetry(fn, maxRetries = 4) {
+  let delay = 1000;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      const is503 = err.message?.includes('503') || err.message?.includes('Service Unavailable');
+      const is429 = err.message?.includes('429') || err.message?.includes('quota');
+      if ((is503 || is429) && attempt < maxRetries) {
+        await new Promise(r => setTimeout(r, delay));
+        delay *= 2;
+      } else {
+        throw err;
+      }
+    }
+  }
+}
 
 const functionTools = [{
   functionDeclarations: [
@@ -92,6 +111,17 @@ function executeTool(name, args) {
   return { error: 'Unknown tool' };
 }
 
+// Settings
+router.get('/settings', (req, res) => {
+  res.json(settingsService.read());
+});
+
+router.put('/settings', (req, res) => {
+  const { systemPrompt } = req.body;
+  settingsService.write({ systemPrompt: systemPrompt || '' });
+  res.json({ success: true });
+});
+
 // List sessions (lightweight)
 router.get('/sessions', (req, res) => {
   const chats = chatsService.read();
@@ -141,8 +171,8 @@ router.post('/sessions/:id/message', async (req, res) => {
     return res.status(500).json({ error: 'GEMINI_API_KEY not configured' });
   }
 
-  const { message } = req.body;
-  if (!message?.trim()) return res.status(400).json({ error: 'message required' });
+  const { message, imageData, imageMimeType } = req.body;
+  if (!message?.trim() && !imageData) return res.status(400).json({ error: 'message or image required' });
 
   const chats = chatsService.read();
   const idx = chats.findIndex(c => c.id === req.params.id);
@@ -150,55 +180,93 @@ router.post('/sessions/:id/message', async (req, res) => {
 
   const session = chats[idx];
 
+  // SSE headers for streaming
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('X-Accel-Buffering', 'no');
+  const send = data => res.write(`data: ${JSON.stringify(data)}\n\n`);
+
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const today = new Date().toISOString().split('T')[0];
 
-    const useSearch = needsSearch(message);
+    const useSearch = !imageData && needsSearch(message || '');
+    const { systemPrompt: customPrompt } = settingsService.read();
+    const personality = customPrompt
+      ? customPrompt + '\n\n'
+      : 'You are a helpful personal assistant integrated with the user\'s Hub app.\n';
+    const systemInstruction = personality
+      + (useSearch ? '' : 'You have access to their todo list and weight tracking data via tools.\n')
+      + `Today's date is ${today}.\n`
+      + 'Be concise and friendly. When you add a todo or log weight, confirm what you did.\n'
+      + 'When listing todos, show them with checkmarks for done items.\n'
+      + 'Respond in the same language the user writes in.';
+
     const model = genAI.getGenerativeModel({
       model: 'gemini-2.5-flash',
       tools: useSearch ? searchTools : functionTools,
-      systemInstruction: `You are a helpful personal assistant integrated with the user's Hub app.
-${useSearch ? '' : 'You have access to their todo list and weight tracking data via tools.'}
-Today's date is ${today}.
-Be concise and friendly. When you add a todo or log weight, confirm what you did.
-When listing todos, show them with checkmarks for done items.
-Respond in the same language the user writes in.`
+      systemInstruction
     });
 
     const chat = model.startChat({ history: session.geminiHistory });
-    let result = await chat.sendMessage(message);
-    let response = result.response;
 
+    const parts = [];
+    if (imageData) parts.push({ inlineData: { mimeType: imageMimeType || 'image/jpeg', data: imageData } });
+    if (message?.trim()) parts.push({ text: message.trim() });
+    const msgPayload = parts.length === 1 && parts[0].text ? parts[0].text : parts;
+
+    let fullText = '';
+
+    // stream one round, collect full response for function-call inspection
+    async function streamRound(payload) {
+      const result = await withRetry(() => chat.sendMessageStream(payload));
+      for await (const chunk of result.stream) {
+        const t = chunk.text();
+        if (t) { fullText += t; send({ chunk: t }); }
+      }
+      return await result.response;
+    }
+
+    let response = await streamRound(msgPayload);
+
+    // function-call loop: tool rounds produce no visible text, so signal "thinking"
     while (response.functionCalls()?.length > 0) {
+      send({ thinking: true });
       const calls = response.functionCalls();
       const toolResults = calls.map(call => ({
         functionResponse: { name: call.name, response: executeTool(call.name, call.args) }
       }));
-      result = await chat.sendMessage(toolResults);
-      response = result.response;
+      fullText = '';
+      response = await streamRound(toolResults);
     }
 
-    const aiText = response.text();
     const now = new Date().toISOString();
+    const userText = message?.trim() || '';
 
-    session.messages.push({ role: 'user', content: message, ts: now });
-    session.messages.push({ role: 'ai', content: aiText, ts: now });
-    session.geminiHistory = await chat.getHistory();
+    session.messages.push({ role: 'user', content: userText, hasImage: !!imageData, ts: now });
+    session.messages.push({ role: 'ai', content: fullText, ts: now });
+
+    const rawHistory = await chat.getHistory();
+    session.geminiHistory = rawHistory.map(h => ({
+      ...h,
+      parts: h.parts.map(p => p.inlineData ? { text: '[image]' } : p)
+    }));
     session.updatedAt = now;
 
-    // Auto-title from first message
+    const titleText = userText || 'Image';
     if (session.messages.length === 2) {
-      session.title = message.length > 48 ? message.slice(0, 48) + '…' : message;
+      session.title = titleText.length > 48 ? titleText.slice(0, 48) + '…' : titleText;
     }
 
     chats[idx] = session;
     chatsService.write(chats);
 
-    res.json({ text: aiText });
+    send({ done: true, title: session.title });
+    res.end();
   } catch (err) {
     console.error('Gemini error:', err.message);
-    res.status(500).json({ error: err.message });
+    send({ error: err.message });
+    res.end();
   }
 });
 
