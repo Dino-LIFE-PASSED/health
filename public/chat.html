@@ -872,6 +872,12 @@ Leave empty to use the default personality."></textarea>
             messagesEl.scrollTop = messagesEl.scrollHeight;
           }
 
+          if (evt.reset) {
+            // narration before tools — clear streamed text
+            if (aiBubble) { aiBubble.remove(); aiBubble = null; }
+            accText = '';
+          }
+
           if (evt.thinking) {
             // tool call in progress — show dots again
             typingEl.classList.add('visible');

@@ -19,9 +19,9 @@
       --card: #ffffff;
       --border: #e5e5e5;
       --orange: #f97316;
-      --purple: #f97316;
       --green: #22c55e;
       --red: #ef4444;
+      --yellow: #eab308;
       --text: #1a2332;
       --muted: #9ca3af;
     }
@@ -53,56 +53,75 @@
     }
 
     header a:hover { color: var(--text); }
-
-    .header-title { font-size: 1rem; font-weight: 600; color: var(--purple); letter-spacing: 0.05em; }
+    .header-title { font-size: 1rem; font-weight: 600; color: var(--orange); letter-spacing: 0.05em; }
 
     .main { flex: 1; max-width: 640px; width: 100%; margin: 0 auto; padding: 24px 16px 40px; }
 
     /* Add form */
     .add-form {
-      display: flex;
-      gap: 10px;
       margin-bottom: 24px;
-    }
-
-    .add-form input {
-      flex: 1;
       background: var(--card);
       border: 1px solid var(--border);
-      padding: 12px 16px;
+    }
+
+    .add-row { display: flex; }
+
+    .add-row input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      border-bottom: 1px dashed var(--border);
+      padding: 13px 16px;
       color: var(--text);
       font-size: 1rem;
       font-family: inherit;
       outline: none;
-      transition: border-color 0.15s;
     }
 
-    .add-form input:focus { border-color: var(--purple); }
-    .add-form input::placeholder { color: var(--muted); }
+    .add-row input:focus { border-bottom-color: var(--orange); }
+    .add-row input::placeholder { color: var(--muted); }
 
     .btn-add {
-      background: var(--purple);
+      background: var(--orange);
       border: none;
-      padding: 12px 20px;
+      padding: 13px 20px;
       color: #000;
       font-size: 1.2rem;
       cursor: pointer;
       transition: opacity 0.15s;
       line-height: 1;
+      flex-shrink: 0;
     }
 
     .btn-add:hover { opacity: 0.85; }
 
-    /* Filter tabs */
-    .filters {
+    .add-opts {
       display: flex;
-      gap: 6px;
-      margin-bottom: 16px;
     }
+
+    .opt-select, .opt-input {
+      background: transparent;
+      border: none;
+      border-right: 1px dashed var(--border);
+      padding: 8px 10px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .opt-select { flex-shrink: 0; }
+    .opt-input { flex: 1; }
+    .opt-input:last-child { border-right: none; }
+    .opt-select:focus, .opt-input:focus { color: var(--text); }
+    .opt-input::placeholder { color: var(--muted); }
+    .opt-select option { background: var(--bg2); color: var(--text); }
+
+    /* Filter tabs */
+    .filters { display: flex; gap: 6px; margin-bottom: 16px; }
 
     .filter-btn {
       padding: 6px 14px;
-      border-radius: 0;
       border: 1px solid var(--border);
       background: transparent;
       color: var(--muted);
@@ -149,14 +168,18 @@
       background: var(--card);
       border-top: 1px dashed var(--border);
       border-bottom: 1px dashed var(--border);
-      border-left: 1px solid var(--border);
       border-right: 1px solid var(--border);
-      padding: 14px 16px;
+      border-left: 3px solid var(--border);
+      padding: 12px 14px;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 12px;
       transition: opacity 0.2s;
     }
+
+    .todo-item[data-priority="high"]   { border-left-color: var(--red); }
+    .todo-item[data-priority="medium"] { border-left-color: var(--yellow); }
+    .todo-item[data-priority="low"]    { border-left-color: var(--muted); }
 
     .todo-item.done { opacity: 0.45; }
 
@@ -171,12 +194,10 @@
       align-items: center;
       justify-content: center;
       transition: all 0.15s;
+      margin-top: 2px;
     }
 
-    .todo-item.done .todo-checkbox {
-      background: var(--green);
-      border-color: var(--green);
-    }
+    .todo-item.done .todo-checkbox { background: var(--green); border-color: var(--green); }
 
     .todo-checkbox::after {
       content: '';
@@ -191,31 +212,202 @@
 
     .todo-item.done .todo-checkbox::after { display: block; }
 
+    .todo-body { flex: 1; min-width: 0; }
+
     .todo-text {
-      flex: 1;
       font-size: 0.9rem;
       line-height: 1.4;
       word-break: break-word;
     }
 
-    .todo-item.done .todo-text {
-      text-decoration: line-through;
-      color: var(--muted);
+    .todo-item.done .todo-text { text-decoration: line-through; color: var(--muted); }
+
+    .todo-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 6px;
     }
 
-    .btn-delete {
+    .due-date {
+      font-size: 0.72rem;
+      color: var(--muted);
+      background: var(--bg);
+      padding: 2px 6px;
+      border: 1px dashed var(--border);
+    }
+
+    .due-date.overdue { color: var(--red); border-color: var(--red); }
+
+    .tag {
+      font-size: 0.72rem;
+      color: var(--orange);
+      background: rgba(249,115,22,0.08);
+      padding: 2px 6px;
+      border: 1px dashed rgba(249,115,22,0.3);
+    }
+
+    .todo-actions {
+      display: flex;
+      gap: 2px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .btn-icon {
       background: none;
       border: none;
       color: var(--muted);
-      font-size: 1rem;
+      font-size: 0.95rem;
       cursor: pointer;
-      padding: 2px 4px;
+      padding: 2px 5px;
       line-height: 1;
-      opacity: 0.5;
-      flex-shrink: 0;
+      opacity: 0.4;
     }
 
-    .btn-delete:hover { color: var(--red); opacity: 1; }
+    .btn-icon:hover { opacity: 1; }
+    .btn-icon.edit:hover { color: var(--orange); }
+    .btn-icon.delete:hover { color: var(--red); }
+
+    /* Tag input component */
+    .tag-wrap { position: relative; flex: 1; min-width: 0; overflow: visible; }
+
+    .tag-chips-area {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      align-items: center;
+      cursor: text;
+      min-height: 32px;
+      min-width: 0;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      background: rgba(249,115,22,0.1);
+      border: 1px dashed rgba(249,115,22,0.35);
+      color: var(--orange);
+      font-size: 0.72rem;
+      padding: 2px 6px;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+
+    .chip button {
+      background: none;
+      border: none;
+      color: var(--orange);
+      cursor: pointer;
+      font-size: 0.9rem;
+      padding: 0;
+      line-height: 1;
+      opacity: 0.6;
+    }
+
+    .chip button:hover { opacity: 1; }
+
+    .tag-field {
+      background: transparent;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      font-family: inherit;
+      color: var(--text);
+      min-width: 60px;
+      max-width: 100%;
+      flex: 1;
+    }
+
+    .tag-field::placeholder { color: var(--muted); }
+
+    .tag-drop {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-top: none;
+      z-index: 200;
+      display: none;
+    }
+
+    .tag-drop-item {
+      padding: 7px 12px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      color: var(--text);
+      font-family: inherit;
+    }
+
+    .tag-drop-item:hover { background: rgba(249,115,22,0.08); color: var(--orange); }
+
+    /* add form tag wrap */
+    .opt-tag-wrap { border-right: none; padding: 0; }
+    .opt-tag-wrap .tag-chips-area { padding: 6px 10px; }
+
+    /* edit form tag wrap */
+    .edit-tag-wrap { background: var(--bg); border: 1px dashed var(--border); padding: 0; }
+    .edit-tag-wrap .tag-chips-area { padding: 4px 8px; }
+
+    /* Edit mode */
+    .todo-item.editing { flex-direction: column; gap: 10px; }
+
+    .edit-top { display: flex; gap: 12px; width: 100%; align-items: flex-start; }
+
+    .edit-form { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+
+    .edit-text {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--orange);
+      padding: 4px 0;
+      color: var(--text);
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .edit-opts-row { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .edit-select, .edit-input {
+      background: var(--bg);
+      border: 1px dashed var(--border);
+      padding: 5px 8px;
+      color: var(--text);
+      font-size: 0.78rem;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .edit-input { flex: 1; min-width: 120px; }
+    .edit-input::placeholder { color: var(--muted); }
+    .edit-select option { background: var(--bg2); }
+
+    .edit-btns { display: flex; gap: 8px; }
+
+    .btn-save {
+      background: var(--orange);
+      border: none;
+      padding: 5px 16px;
+      color: #000;
+      font-size: 0.78rem;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .btn-cancel-edit {
+      background: none;
+      border: 1px dashed var(--border);
+      padding: 5px 16px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-family: inherit;
+      cursor: pointer;
+    }
 
     .empty {
       text-align: center;
@@ -236,13 +428,28 @@
 
 <div class="main">
   <form class="add-form" id="addForm">
-    <input type="text" id="newTodo" placeholder="Add a new task..." autocomplete="off" />
-    <button type="submit" class="btn-add">+</button>
+    <div class="add-row">
+      <input type="text" id="newTodo" placeholder="Add a new task..." autocomplete="off" />
+      <button type="submit" class="btn-add">+</button>
+    </div>
+    <div class="add-opts">
+      <select id="newPriority" class="opt-select">
+        <option value="">priority</option>
+        <option value="high">🔴 high</option>
+        <option value="medium">🟡 medium</option>
+        <option value="low">⚪ low</option>
+      </select>
+      <input type="date" id="newDueDate" class="opt-input" />
+      <div class="tag-wrap opt-tag-wrap" id="tiWrap_add">
+        <div class="tag-chips-area" id="tiChips_add" onclick="document.getElementById('tiField_add').focus()"></div>
+        <div class="tag-drop" id="tiDrop_add"></div>
+      </div>
+    </div>
   </form>
 
   <div class="filters">
-    <button class="filter-btn active" data-filter="all">All</button>
-    <button class="filter-btn" data-filter="active">Active</button>
+    <button class="filter-btn" data-filter="all">All</button>
+    <button class="filter-btn active" data-filter="active">Active</button>
     <button class="filter-btn" data-filter="done">Done</button>
   </div>
 
@@ -256,7 +463,8 @@
 
 <script>
   let todos = [];
-  let filter = 'all';
+  let filter = 'active';
+  let editingId = null;
 
   async function load() {
     try {
@@ -266,11 +474,11 @@
     } catch (e) {}
   }
 
-  async function addTodo(text) {
+  async function addTodo(text, priority, dueDate, tags) {
     await fetch('/api/todos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text })
+      body: JSON.stringify({ text, priority, dueDate, tags })
     });
     load();
   }
@@ -280,6 +488,15 @@
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ done: !done })
+    });
+    load();
+  }
+
+  async function updateTodo(id, data) {
+    await fetch(`/api/todos/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
     });
     load();
   }
@@ -294,6 +511,174 @@
     load();
   }
 
+  // ─── Tag input system ───────────────────────────────────────────
+  const tiState = {};
+
+  function getAllTags() {
+    const s = new Set();
+    todos.forEach(t => (t.tags || []).forEach(tag => s.add(tag)));
+    return [...s].sort();
+  }
+
+  function tiInit(key, initialTags = []) {
+    tiState[key] = [...initialTags];
+    tiRenderChips(key);
+  }
+
+  function tiGetTags(key) { return tiState[key] || []; }
+
+  function tiRenderChips(key) {
+    const area = document.getElementById('tiChips_' + key);
+    if (!area) return;
+    const tags = tiState[key] || [];
+    const chips = tags.map((tag, i) =>
+      `<span class="chip">${escHtml(tag)}<button type="button" onclick="tiRemove('${key}',${i})">×</button></span>`
+    ).join('');
+    area.innerHTML = chips +
+      `<input type="text" id="tiField_${key}" class="tag-field" placeholder="${tags.length ? '' : 'tags...'}" autocomplete="off"
+        oninput="tiOnInput('${key}',this.value)"
+        onkeydown="tiOnKeydown(event,'${key}')"
+        onblur="setTimeout(()=>tiHideDrop('${key}'),150)" />`;
+  }
+
+  function tiRemove(key, i) {
+    if (!tiState[key]) return;
+    tiState[key].splice(i, 1);
+    tiRenderChips(key);
+  }
+
+  function tiAdd(key, tag) {
+    tag = tag.trim();
+    if (!tag) return;
+    if (!tiState[key]) tiState[key] = [];
+    if (!tiState[key].includes(tag)) tiState[key].push(tag);
+    tiRenderChips(key);
+    tiHideDrop(key);
+  }
+
+  function tiOnInput(key, val) {
+    if (!val.trim()) { tiHideDrop(key); return; }
+    const matches = getAllTags().filter(t =>
+      !(tiState[key] || []).includes(t) && t.toLowerCase().includes(val.toLowerCase())
+    );
+    const drop = document.getElementById('tiDrop_' + key);
+    if (!drop || matches.length === 0) { tiHideDrop(key); return; }
+    drop.innerHTML = matches.map(t =>
+      `<div class="tag-drop-item" onmousedown="tiAdd('${key}','${escHtml(t)}');document.getElementById('tiField_${key}').value=''">${escHtml(t)}</div>`
+    ).join('');
+    drop.style.display = 'block';
+  }
+
+  function tiOnKeydown(e, key) {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      tiAdd(key, e.target.value);
+      e.target.value = '';
+    } else if (e.key === 'Backspace' && !e.target.value) {
+      if (tiState[key]?.length) { tiState[key].pop(); tiRenderChips(key); }
+    } else if (e.key === 'Escape') {
+      tiHideDrop(key);
+    }
+  }
+
+  function tiHideDrop(key) {
+    const drop = document.getElementById('tiDrop_' + key);
+    if (drop) drop.style.display = 'none';
+  }
+  // ────────────────────────────────────────────────────────────────
+
+  function startEdit(id) {
+    editingId = id;
+    render();
+    setTimeout(() => {
+      const todo = todos.find(t => t.id === id);
+      tiInit(id, todo?.tags || []);
+      const el = document.querySelector('.edit-text');
+      if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+    }, 0);
+  }
+
+  function cancelEdit() {
+    editingId = null;
+    render();
+  }
+
+  async function saveEdit(id) {
+    const item = document.querySelector(`.todo-item[data-id="${id}"]`);
+    const text = item.querySelector('.edit-text')?.value.trim();
+    if (!text) return;
+    const priority = item.querySelector('.edit-select')?.value || '';
+    const dueDate = item.querySelector('.edit-due')?.value || '';
+    const tags = tiGetTags(id);
+    editingId = null;
+    await updateTodo(id, { text, priority, dueDate, tags });
+  }
+
+  function isOverdue(dueDate, done) {
+    if (!dueDate || done) return false;
+    return dueDate < new Date().toISOString().split('T')[0];
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const [y, m, d] = dateStr.split('-');
+    return `${d}/${m}/${y}`;
+  }
+
+  function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function renderItem(t) {
+    const overdue = isOverdue(t.dueDate, t.done);
+    const metaParts = [];
+    if (t.dueDate) metaParts.push(`<span class="due-date${overdue ? ' overdue' : ''}">${formatDate(t.dueDate)}</span>`);
+    if (t.tags?.length) t.tags.forEach(tag => metaParts.push(`<span class="tag">#${escHtml(tag)}</span>`));
+    const meta = metaParts.length ? `<div class="todo-meta">${metaParts.join('')}</div>` : '';
+
+    if (t.id === editingId) {
+      return `
+        <div class="todo-item editing" data-id="${t.id}" data-priority="${t.priority || ''}">
+          <div class="edit-top">
+            <div class="todo-checkbox"></div>
+            <div class="edit-form">
+              <input class="edit-text" type="text" value="${escHtml(t.text)}" />
+              <div class="edit-opts-row">
+                <select class="edit-select">
+                  <option value="" ${!t.priority ? 'selected' : ''}>priority</option>
+                  <option value="high" ${t.priority === 'high' ? 'selected' : ''}>🔴 high</option>
+                  <option value="medium" ${t.priority === 'medium' ? 'selected' : ''}>🟡 medium</option>
+                  <option value="low" ${t.priority === 'low' ? 'selected' : ''}>⚪ low</option>
+                </select>
+                <input class="edit-input edit-due" type="date" value="${t.dueDate || ''}" />
+                <div class="tag-wrap edit-tag-wrap" id="tiWrap_${t.id}">
+                  <div class="tag-chips-area" id="tiChips_${t.id}" onclick="document.getElementById('tiField_${t.id}').focus()"></div>
+                  <div class="tag-drop" id="tiDrop_${t.id}"></div>
+                </div>
+              </div>
+              <div class="edit-btns">
+                <button type="button" class="btn-save" onclick="saveEdit('${t.id}')">Save</button>
+                <button type="button" class="btn-cancel-edit" onclick="cancelEdit()">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    return `
+      <div class="todo-item ${t.done ? 'done' : ''}" data-id="${t.id}" data-priority="${t.priority || ''}">
+        <div class="todo-checkbox" onclick="toggleTodo('${t.id}', ${t.done})"></div>
+        <div class="todo-body">
+          <div class="todo-text">${escHtml(t.text)}</div>
+          ${meta}
+        </div>
+        <div class="todo-actions">
+          <button class="btn-icon edit" onclick="startEdit('${t.id}')" title="Edit">✎</button>
+          <button class="btn-icon delete" onclick="deleteTodo('${t.id}')" title="Delete">✕</button>
+        </div>
+      </div>`;
+  }
+
   function render() {
     const filtered = todos.filter(t => {
       if (filter === 'active') return !t.done;
@@ -306,8 +691,7 @@
 
     document.getElementById('statsText').textContent =
       `${remaining} task${remaining !== 1 ? 's' : ''} remaining`;
-    const clearBtn = document.getElementById('clearBtn');
-    clearBtn.disabled = completed === 0;
+    document.getElementById('clearBtn').disabled = completed === 0;
 
     const list = document.getElementById('todoList');
 
@@ -318,17 +702,7 @@
       return;
     }
 
-    list.innerHTML = filtered.map(t => `
-      <div class="todo-item ${t.done ? 'done' : ''}">
-        <div class="todo-checkbox" onclick="toggleTodo('${t.id}', ${t.done})"></div>
-        <div class="todo-text">${escHtml(t.text)}</div>
-        <button class="btn-delete" onclick="deleteTodo('${t.id}')" title="Delete">&#10005;</button>
-      </div>
-    `).join('');
-  }
-
-  function escHtml(str) {
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    list.innerHTML = filtered.map(renderItem).join('');
   }
 
   document.getElementById('addForm').addEventListener('submit', e => {
@@ -336,8 +710,14 @@
     const input = document.getElementById('newTodo');
     const text = input.value.trim();
     if (!text) return;
+    const priority = document.getElementById('newPriority').value;
+    const dueDate = document.getElementById('newDueDate').value;
+    const tags = tiGetTags('add');
     input.value = '';
-    addTodo(text);
+    document.getElementById('newPriority').value = '';
+    document.getElementById('newDueDate').value = '';
+    tiInit('add', []);
+    addTodo(text, priority, dueDate, tags);
   });
 
   document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -352,6 +732,7 @@
   document.getElementById('clearBtn').addEventListener('click', clearCompleted);
 
   load();
+  tiInit('add', []);
 </script>
 </body>
 </html>
