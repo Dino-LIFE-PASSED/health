@@ -178,6 +178,17 @@
       align-items: flex-start;
       gap: 12px;
       transition: opacity 0.2s;
+      min-height: 80px;
+    }
+
+    @media (max-width: 640px) {
+      .todo-item { min-height: 108px; }
+      .btn-icon { opacity: 0.75; }
+      .btn-icon.edit { color: var(--orange); }
+      .btn-icon.delete { color: var(--red); }
+      .btn-icon:hover,
+      .btn-icon.edit:hover,
+      .btn-icon.delete:hover { border-color: transparent; }
     }
 
     .todo-item[data-priority="high"]   { border-left-color: var(--red); }
@@ -253,8 +264,8 @@
     .todo-actions {
       display: flex;
       flex-direction: column;
-      gap: 3px;
       flex-shrink: 0;
+      align-self: stretch;
     }
 
     .btn-icon {
@@ -267,11 +278,10 @@
       line-height: 1;
       opacity: 0.35;
       width: 30px;
-      height: 30px;
+      flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
     }
 
     .btn-icon:hover { opacity: 1; border-color: var(--border); }
