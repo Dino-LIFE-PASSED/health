@@ -53,7 +53,7 @@
     }
 
     header a:hover { color: var(--text); }
-    .header-title { font-size: 1rem; font-weight: 600; color: var(--orange); letter-spacing: 0.05em; }
+    .header-title { font-size: 1.05rem; font-weight: 600; color: var(--orange); letter-spacing: 0.05em; }
 
     .main { flex: 1; max-width: 640px; width: 100%; margin: 0 auto; padding: 24px 16px 40px; }
 
@@ -78,6 +78,8 @@
       outline: none;
     }
 
+    body { font-size: 15px; }
+
     .add-row input:focus { border-bottom-color: var(--orange); }
     .add-row input::placeholder { color: var(--muted); }
 
@@ -97,6 +99,7 @@
 
     .add-opts {
       display: flex;
+      align-items: center;
     }
 
     .opt-select, .opt-input {
@@ -105,7 +108,7 @@
       border-right: 1px dashed var(--border);
       padding: 8px 10px;
       color: var(--muted);
-      font-size: 0.78rem;
+      font-size: 0.85rem;
       font-family: inherit;
       outline: none;
     }
@@ -125,7 +128,7 @@
       border: 1px solid var(--border);
       background: transparent;
       color: var(--muted);
-      font-size: 0.8rem;
+      font-size: 0.83rem;
       font-family: inherit;
       cursor: pointer;
       transition: all 0.15s;
@@ -143,7 +146,7 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 14px;
-      font-size: 0.78rem;
+      font-size: 0.82rem;
       color: var(--muted);
     }
 
@@ -151,7 +154,7 @@
       background: none;
       border: none;
       color: var(--red);
-      font-size: 0.78rem;
+      font-size: 0.82rem;
       font-family: inherit;
       cursor: pointer;
       padding: 0;
@@ -215,8 +218,8 @@
     .todo-body { flex: 1; min-width: 0; }
 
     .todo-text {
-      font-size: 0.9rem;
-      line-height: 1.4;
+      font-size: 0.95rem;
+      line-height: 1.45;
       word-break: break-word;
     }
 
@@ -230,7 +233,7 @@
     }
 
     .due-date {
-      font-size: 0.72rem;
+      font-size: 0.78rem;
       color: var(--muted);
       background: var(--bg);
       padding: 2px 6px;
@@ -240,7 +243,7 @@
     .due-date.overdue { color: var(--red); border-color: var(--red); }
 
     .tag {
-      font-size: 0.72rem;
+      font-size: 0.78rem;
       color: var(--orange);
       background: rgba(249,115,22,0.08);
       padding: 2px 6px;
@@ -249,25 +252,31 @@
 
     .todo-actions {
       display: flex;
-      gap: 2px;
+      flex-direction: column;
+      gap: 3px;
       flex-shrink: 0;
-      margin-top: 1px;
     }
 
     .btn-icon {
       background: none;
-      border: none;
+      border: 1px dashed transparent;
       color: var(--muted);
-      font-size: 0.95rem;
+      font-size: 1.05rem;
       cursor: pointer;
-      padding: 2px 5px;
+      padding: 0;
       line-height: 1;
-      opacity: 0.4;
+      opacity: 0.35;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
 
-    .btn-icon:hover { opacity: 1; }
-    .btn-icon.edit:hover { color: var(--orange); }
-    .btn-icon.delete:hover { color: var(--red); }
+    .btn-icon:hover { opacity: 1; border-color: var(--border); }
+    .btn-icon.edit:hover { color: var(--orange); border-color: rgba(249,115,22,0.35); }
+    .btn-icon.delete:hover { color: var(--red); border-color: rgba(239,68,68,0.35); }
 
     /* Tag input component */
     .tag-wrap { position: relative; flex: 1; min-width: 0; overflow: visible; }
@@ -278,7 +287,6 @@
       gap: 4px;
       align-items: center;
       cursor: text;
-      min-height: 32px;
       min-width: 0;
     }
 
@@ -289,7 +297,7 @@
       background: rgba(249,115,22,0.1);
       border: 1px dashed rgba(249,115,22,0.35);
       color: var(--orange);
-      font-size: 0.72rem;
+      font-size: 0.75rem;
       padding: 2px 6px;
       font-family: inherit;
       white-space: nowrap;
@@ -312,7 +320,7 @@
       background: transparent;
       border: none;
       outline: none;
-      font-size: 1rem;
+      font-size: 0.85rem;
       font-family: inherit;
       color: var(--text);
       min-width: 60px;
@@ -335,8 +343,8 @@
     }
 
     .tag-drop-item {
-      padding: 7px 12px;
-      font-size: 0.82rem;
+      padding: 8px 12px;
+      font-size: 0.85rem;
       cursor: pointer;
       color: var(--text);
       font-family: inherit;
@@ -366,19 +374,20 @@
       border-bottom: 1px solid var(--orange);
       padding: 4px 0;
       color: var(--text);
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       font-family: inherit;
       outline: none;
     }
 
-    .edit-opts-row { display: flex; gap: 6px; flex-wrap: wrap; }
+    .edit-opts-row { display: flex; flex-direction: column; gap: 6px; }
+    .edit-opts-top { display: flex; gap: 6px; }
 
     .edit-select, .edit-input {
       background: var(--bg);
       border: 1px dashed var(--border);
       padding: 5px 8px;
       color: var(--text);
-      font-size: 0.78rem;
+      font-size: 0.83rem;
       font-family: inherit;
       outline: none;
     }
@@ -394,7 +403,7 @@
       border: none;
       padding: 5px 16px;
       color: #000;
-      font-size: 0.78rem;
+      font-size: 0.83rem;
       font-family: inherit;
       cursor: pointer;
     }
@@ -404,7 +413,7 @@
       border: 1px dashed var(--border);
       padding: 5px 16px;
       color: var(--muted);
-      font-size: 0.78rem;
+      font-size: 0.83rem;
       font-family: inherit;
       cursor: pointer;
     }
@@ -413,7 +422,7 @@
       text-align: center;
       padding: 48px 0;
       color: var(--muted);
-      font-size: 0.9rem;
+      font-size: 0.95rem;
     }
 
     .empty span { display: block; font-size: 2rem; margin-bottom: 10px; }
@@ -465,6 +474,7 @@
   let todos = [];
   let filter = 'active';
   let editingId = null;
+  let didJustStartEdit = false;
 
   async function load() {
     try {
@@ -537,6 +547,7 @@
     area.innerHTML = chips +
       `<input type="text" id="tiField_${key}" class="tag-field" placeholder="${tags.length ? '' : 'tags...'}" autocomplete="off"
         oninput="tiOnInput('${key}',this.value)"
+        onfocus="tiOnFocus('${key}')"
         onkeydown="tiOnKeydown(event,'${key}')"
         onblur="setTimeout(()=>tiHideDrop('${key}'),150)" />`;
   }
@@ -556,17 +567,23 @@
     tiHideDrop(key);
   }
 
-  function tiOnInput(key, val) {
-    if (!val.trim()) { tiHideDrop(key); return; }
-    const matches = getAllTags().filter(t =>
-      !(tiState[key] || []).includes(t) && t.toLowerCase().includes(val.toLowerCase())
-    );
+  function tiShowDrop(key, val) {
+    const current = tiState[key] || [];
+    const matches = (val.trim()
+      ? getAllTags().filter(t => !current.includes(t) && t.toLowerCase().includes(val.toLowerCase()))
+      : getAllTags().filter(t => !current.includes(t))).slice(0, 5);
     const drop = document.getElementById('tiDrop_' + key);
     if (!drop || matches.length === 0) { tiHideDrop(key); return; }
     drop.innerHTML = matches.map(t =>
       `<div class="tag-drop-item" onmousedown="tiAdd('${key}','${escHtml(t)}');document.getElementById('tiField_${key}').value=''">${escHtml(t)}</div>`
     ).join('');
     drop.style.display = 'block';
+  }
+
+  function tiOnInput(key, val) { tiShowDrop(key, val); }
+  function tiOnFocus(key) {
+    const val = document.getElementById('tiField_' + key)?.value || '';
+    tiShowDrop(key, val);
   }
 
   function tiOnKeydown(e, key) {
@@ -588,6 +605,7 @@
   // ────────────────────────────────────────────────────────────────
 
   function startEdit(id) {
+    didJustStartEdit = true;
     editingId = id;
     render();
     setTimeout(() => {
@@ -595,7 +613,13 @@
       tiInit(id, todo?.tags || []);
       const el = document.querySelector('.edit-text');
       if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+      didJustStartEdit = false;
     }, 0);
+  }
+
+  function editKeydown(e, id) {
+    if (e.key === 'Enter') { e.preventDefault(); saveEdit(id); }
+    if (e.key === 'Escape') { e.preventDefault(); cancelEdit(); }
   }
 
   function cancelEdit() {
@@ -642,23 +666,24 @@
           <div class="edit-top">
             <div class="todo-checkbox"></div>
             <div class="edit-form">
-              <input class="edit-text" type="text" value="${escHtml(t.text)}" />
+              <input class="edit-text" type="text" value="${escHtml(t.text)}" onkeydown="editKeydown(event,'${t.id}')" />
               <div class="edit-opts-row">
-                <select class="edit-select">
-                  <option value="" ${!t.priority ? 'selected' : ''}>priority</option>
-                  <option value="high" ${t.priority === 'high' ? 'selected' : ''}>🔴 high</option>
-                  <option value="medium" ${t.priority === 'medium' ? 'selected' : ''}>🟡 medium</option>
-                  <option value="low" ${t.priority === 'low' ? 'selected' : ''}>⚪ low</option>
-                </select>
-                <input class="edit-input edit-due" type="date" value="${t.dueDate || ''}" />
+                <div class="edit-opts-top">
+                  <select class="edit-select">
+                    <option value="" ${!t.priority ? 'selected' : ''}>priority</option>
+                    <option value="high" ${t.priority === 'high' ? 'selected' : ''}>🔴 high</option>
+                    <option value="medium" ${t.priority === 'medium' ? 'selected' : ''}>🟡 medium</option>
+                    <option value="low" ${t.priority === 'low' ? 'selected' : ''}>⚪ low</option>
+                  </select>
+                  <input class="edit-input edit-due" type="date" value="${t.dueDate || ''}" />
+                </div>
                 <div class="tag-wrap edit-tag-wrap" id="tiWrap_${t.id}">
                   <div class="tag-chips-area" id="tiChips_${t.id}" onclick="document.getElementById('tiField_${t.id}').focus()"></div>
                   <div class="tag-drop" id="tiDrop_${t.id}"></div>
                 </div>
               </div>
               <div class="edit-btns">
-                <button type="button" class="btn-save" onclick="saveEdit('${t.id}')">Save</button>
-                <button type="button" class="btn-cancel-edit" onclick="cancelEdit()">Cancel</button>
+                <button type="button" class="btn-save" onclick="saveEdit('${t.id}')">Done</button>
               </div>
             </div>
           </div>
@@ -730,6 +755,10 @@
   });
 
   document.getElementById('clearBtn').addEventListener('click', clearCompleted);
+
+  document.addEventListener('keydown', (e) => {
+    if (editingId && e.key === 'Escape') cancelEdit();
+  });
 
   load();
   tiInit('add', []);
