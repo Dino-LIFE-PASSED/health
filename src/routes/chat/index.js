@@ -110,7 +110,7 @@ router.post('/sessions/:id/message', async (req, res) => {
 
     const { systemPrompt: customPrompt } = settingsService.read();
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.5-flash',
+      model: useSearch ? 'gemini-2.5-flash' : 'gemini-2.5-pro',
       tools: useSearch ? searchTools : functionTools,
       systemInstruction: buildSystemInstruction(useSearch, customPrompt, today)
     });

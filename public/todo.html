@@ -436,6 +436,90 @@
     }
 
     .empty span { display: block; font-size: 2rem; margin-bottom: 10px; }
+
+    /* ── Projects ────────────────────────────────────────────────── */
+    .projects-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+    .projects-row::-webkit-scrollbar { display: none; }
+
+    .project-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-family: inherit;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+
+    .all-chip.active { border-color: var(--orange); color: var(--orange); background: rgba(249,115,22,0.08); }
+
+    .project-chip.active {
+      border-color: var(--pc);
+      color: var(--pc);
+      background: color-mix(in srgb, var(--pc) 10%, transparent);
+    }
+
+    .pc-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--pc, var(--muted)); flex-shrink: 0; }
+    .pc-count { font-size: 0.72rem; opacity: 0.6; }
+    .pc-x { font-size: 0.95rem; opacity: 0.35; margin-left: 1px; line-height: 1; }
+    .pc-x:hover { opacity: 1; color: var(--red); }
+
+    .btn-add-project { border-style: dashed; }
+
+    .add-proj-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border: 1px dashed var(--orange);
+      padding: 4px 10px;
+      flex-shrink: 0;
+    }
+
+    .add-project-input {
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: inherit;
+      font-size: 0.82rem;
+      color: var(--text);
+      width: 110px;
+    }
+    .add-project-input::placeholder { color: var(--muted); }
+
+    .btn-proj-confirm {
+      background: none;
+      border: none;
+      color: var(--orange);
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .project-meta-tag {
+      font-size: 0.72rem;
+      padding: 2px 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border: 1px dashed var(--border);
+      color: var(--muted);
+    }
+
+    .project-meta-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
   </style>
 </head>
 <body>
@@ -452,6 +536,9 @@
       <button type="submit" class="btn-add">+</button>
     </div>
     <div class="add-opts">
+      <select id="newProject" class="opt-select">
+        <option value="">project</option>
+      </select>
       <select id="newPriority" class="opt-select">
         <option value="">priority</option>
         <option value="high">🔴 high</option>
@@ -465,6 +552,8 @@
       </div>
     </div>
   </form>
+
+  <div class="projects-row" id="projectsRow"></div>
 
   <div class="filters">
     <button class="filter-btn" data-filter="all">All</button>
@@ -482,23 +571,99 @@
 
 <script>
   let todos = [];
+  let projects = [];
   let filter = 'active';
+  let activeProjectId = null;
   let editingId = null;
   let didJustStartEdit = false;
+  let addingProject = false;
 
   async function load() {
     try {
-      const res = await fetch('/api/todos');
-      todos = await res.json();
+      const [todosRes, projectsRes] = await Promise.all([
+        fetch('/api/todos'),
+        fetch('/api/projects')
+      ]);
+      todos = await todosRes.json();
+      projects = await projectsRes.json();
+      renderProjects();
       render();
     } catch (e) {}
   }
 
-  async function addTodo(text, priority, dueDate, tags) {
+  function renderProjects() {
+    const row = document.getElementById('projectsRow');
+    if (!row) return;
+
+    const chips = projects.map(p => {
+      const active = activeProjectId === p.id ? ' active' : '';
+      const count = todos.filter(t => t.projectId === p.id && !t.done).length;
+      return `<button class="project-chip${active}" style="--pc:${escHtml(p.color)}" onclick="setProject('${p.id}')">
+        <span class="pc-dot"></span>${escHtml(p.name)}<span class="pc-count">${count}</span>
+        <span class="pc-x" onmousedown="event.stopPropagation()" onclick="event.stopPropagation();deleteProject('${p.id}')">×</span>
+      </button>`;
+    }).join('');
+
+    const addPart = addingProject
+      ? `<span class="add-proj-inline">
+          <input class="add-project-input" id="projectInput" placeholder="name..." onkeydown="projectKeydown(event)" />
+          <button class="btn-proj-confirm" onclick="confirmAddProject()">✓</button>
+        </span>`
+      : `<button class="project-chip btn-add-project" onclick="startAddProject()">+ New</button>`;
+
+    const allActive = !activeProjectId ? ' active' : '';
+    row.innerHTML = `<button class="project-chip all-chip${allActive}" onclick="setProject(null)">All</button>${chips}${addPart}`;
+
+    if (addingProject) setTimeout(() => document.getElementById('projectInput')?.focus(), 0);
+
+    const sel = document.getElementById('newProject');
+    if (sel) {
+      sel.innerHTML = '<option value="">project</option>' +
+        projects.map(p => `<option value="${p.id}"${activeProjectId === p.id ? ' selected' : ''}>${escHtml(p.name)}</option>`).join('');
+    }
+  }
+
+  function setProject(id) {
+    activeProjectId = id;
+    renderProjects();
+    render();
+  }
+
+  function startAddProject() { addingProject = true; renderProjects(); }
+
+  async function confirmAddProject() {
+    const name = document.getElementById('projectInput')?.value.trim();
+    if (!name) { addingProject = false; renderProjects(); return; }
+    addingProject = false;
+    const res = await fetch('/api/projects', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name })
+    });
+    const project = await res.json();
+    projects.push(project);
+    renderProjects();
+  }
+
+  function projectKeydown(e) {
+    if (e.key === 'Enter') confirmAddProject();
+    if (e.key === 'Escape') { addingProject = false; renderProjects(); }
+  }
+
+  async function deleteProject(id) {
+    await fetch(`/api/projects/${id}`, { method: 'DELETE' });
+    projects = projects.filter(p => p.id !== id);
+    todos = todos.map(t => t.projectId === id ? { ...t, projectId: '' } : t);
+    if (activeProjectId === id) activeProjectId = null;
+    renderProjects();
+    render();
+  }
+
+  async function addTodo(text, priority, dueDate, tags, projectId) {
     await fetch('/api/todos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text, priority, dueDate, tags })
+      body: JSON.stringify({ text, priority, dueDate, tags, projectId: projectId || '' })
     });
     load();
   }
@@ -641,11 +806,13 @@
     const item = document.querySelector(`.todo-item[data-id="${id}"]`);
     const text = item.querySelector('.edit-text')?.value.trim();
     if (!text) return;
-    const priority = item.querySelector('.edit-select')?.value || '';
+    const selects = item.querySelectorAll('.edit-select');
+    const priority = selects[0]?.value || '';
+    const projectId = selects[1]?.value || '';
     const dueDate = item.querySelector('.edit-due')?.value || '';
     const tags = tiGetTags(id);
     editingId = null;
-    await updateTodo(id, { text, priority, dueDate, tags });
+    await updateTodo(id, { text, priority, dueDate, tags, projectId });
   }
 
   function isOverdue(dueDate, done) {
@@ -668,6 +835,10 @@
     const metaParts = [];
     if (t.dueDate) metaParts.push(`<span class="due-date${overdue ? ' overdue' : ''}">${formatDate(t.dueDate)}</span>`);
     if (t.tags?.length) t.tags.forEach(tag => metaParts.push(`<span class="tag">#${escHtml(tag)}</span>`));
+    if (t.projectId && !activeProjectId) {
+      const proj = projects.find(p => p.id === t.projectId);
+      if (proj) metaParts.push(`<span class="project-meta-tag"><span class="project-meta-dot" style="background:${escHtml(proj.color)}"></span>${escHtml(proj.name)}</span>`);
+    }
     const meta = metaParts.length ? `<div class="todo-meta">${metaParts.join('')}</div>` : '';
 
     if (t.id === editingId) {
@@ -684,6 +855,10 @@
                     <option value="high" ${t.priority === 'high' ? 'selected' : ''}>🔴 high</option>
                     <option value="medium" ${t.priority === 'medium' ? 'selected' : ''}>🟡 medium</option>
                     <option value="low" ${t.priority === 'low' ? 'selected' : ''}>⚪ low</option>
+                  </select>
+                  <select class="edit-select edit-project">
+                    <option value="">project</option>
+                    ${projects.map(p => `<option value="${p.id}"${t.projectId === p.id ? ' selected' : ''}>${escHtml(p.name)}</option>`).join('')}
                   </select>
                   <input class="edit-input edit-due" type="date" value="${t.dueDate || ''}" />
                 </div>
@@ -715,14 +890,15 @@
   }
 
   function render() {
-    const filtered = todos.filter(t => {
+    const scoped = activeProjectId ? todos.filter(t => t.projectId === activeProjectId) : todos;
+    const filtered = scoped.filter(t => {
       if (filter === 'active') return !t.done;
       if (filter === 'done') return t.done;
       return true;
     });
 
-    const remaining = todos.filter(t => !t.done).length;
-    const completed = todos.filter(t => t.done).length;
+    const remaining = scoped.filter(t => !t.done).length;
+    const completed = scoped.filter(t => t.done).length;
 
     document.getElementById('statsText').textContent =
       `${remaining} task${remaining !== 1 ? 's' : ''} remaining`;
@@ -745,14 +921,16 @@
     const input = document.getElementById('newTodo');
     const text = input.value.trim();
     if (!text) return;
+    const projectId = document.getElementById('newProject').value || activeProjectId || '';
     const priority = document.getElementById('newPriority').value;
     const dueDate = document.getElementById('newDueDate').value;
     const tags = tiGetTags('add');
     input.value = '';
+    document.getElementById('newProject').value = '';
     document.getElementById('newPriority').value = '';
     document.getElementById('newDueDate').value = '';
     tiInit('add', []);
-    addTodo(text, priority, dueDate, tags);
+    addTodo(text, priority, dueDate, tags, projectId);
   });
 
   document.querySelectorAll('.filter-btn').forEach(btn => {

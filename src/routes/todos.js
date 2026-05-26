@@ -7,7 +7,7 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-  const { text, priority, dueDate, tags } = req.body;
+  const { text, priority, dueDate, tags, projectId } = req.body;
   if (!text || !text.trim()) return res.status(400).json({ error: 'text required' });
 
   const todos = db.read();
@@ -18,6 +18,7 @@ router.post('/', (req, res) => {
     priority: priority || '',
     dueDate: dueDate || '',
     tags: Array.isArray(tags) ? tags : [],
+    projectId: projectId || '',
     createdAt: new Date().toISOString()
   };
   todos.push(todo);
@@ -29,12 +30,13 @@ router.patch('/:id', (req, res) => {
   const todos = db.read();
   const idx = todos.findIndex(t => t.id === req.params.id);
   if (idx < 0) return res.status(404).json({ error: 'not found' });
-  const { done, text, priority, dueDate, tags } = req.body;
+  const { done, text, priority, dueDate, tags, projectId } = req.body;
   if (done !== undefined) todos[idx].done = done;
   if (text !== undefined) todos[idx].text = text.trim();
   if (priority !== undefined) todos[idx].priority = priority;
   if (dueDate !== undefined) todos[idx].dueDate = dueDate;
   if (tags !== undefined) todos[idx].tags = Array.isArray(tags) ? tags : [];
+  if (projectId !== undefined) todos[idx].projectId = projectId;
   db.write(todos);
   res.json(todos[idx]);
 });

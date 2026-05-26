@@ -81,7 +81,12 @@ const functionTools = [{
   ]
 }];
 
+
+
+
 const searchTools = [{ googleSearch: {} }];
+
+
 
 // ── Tool routing ──────────────────────────────────────────────────────────────
 
@@ -91,6 +96,13 @@ function needsSearch(message) {
   const searchIntent = /ราคา|price|weather|อากาศ|news|ข่าว|bitcoin|crypto|stock|หุ้น|คืออะไร|what is|how to|ทำยังไง|อัตรา|rate|forecast|พยากรณ์/i;
   return searchIntent.test(message);
 }
+
+
+
+
+
+
+
 
 // ── Tool execution ────────────────────────────────────────────────────────────
 

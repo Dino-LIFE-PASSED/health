@@ -4,6 +4,7 @@ const entriesRouter = require('./routes/entries');
 const goalRouter = require('./routes/goal');
 const todosRouter = require('./routes/todos');
 const chatRouter = require('./routes/chat');
+const projectsRouter = require('./routes/projects');
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.get('/chat', (req, res) => res.sendFile(path.join(__dirname, '../public/chat
 app.use('/api/entries', entriesRouter);
 app.use('/api/goal', goalRouter);
 app.use('/api/todos', todosRouter);
+app.use('/api/projects', projectsRouter);
 app.use('/api/chat', chatRouter);
 
 module.exports = app;
