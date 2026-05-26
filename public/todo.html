@@ -29,7 +29,7 @@
     }
 
     body { font-family: var(--mono); font-size: 15px; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; }
-    input, select, textarea { font-size: 16px; }
+    input, select, textarea { font-size: 16px; font-family: inherit; }
 
     /* ── Sidebar ──────────────────────────────────────────────────── */
     .sidebar {
@@ -101,8 +101,7 @@
 
     .add-project-input {
       flex: 1; background: transparent; border: none; outline: none;
-      font-family: var(--mono); font-size: 0.82rem; color: var(--text);
-      min-width: 0;
+      color: var(--text); min-width: 0;
     }
     .add-project-input::placeholder { color: var(--muted); }
 
@@ -125,8 +124,7 @@
     .add-row input {
       flex: 1; background: transparent; border: none;
       border-bottom: 1px dashed var(--border);
-      padding: 13px 16px; color: var(--text);
-      font-size: 1rem; font-family: inherit; outline: none;
+      padding: 13px 16px; color: var(--text); outline: none;
     }
     .add-row input:focus { border-bottom-color: var(--orange); }
     .add-row input::placeholder { color: var(--muted); }
@@ -138,14 +136,15 @@
     }
     .btn-add:hover { opacity: 0.85; }
 
-    .add-opts { display: flex; align-items: center; flex-wrap: wrap; }
+    .add-opts { display: none; align-items: center; flex-wrap: wrap; }
+    .add-form.expanded .add-opts { display: flex; }
     .opt-select, .opt-input {
       background: transparent; border: none;
       border-right: 1px dashed var(--border);
       padding: 8px 10px; color: var(--muted);
-      font-family: inherit; outline: none;
+      outline: none; -webkit-appearance: none; appearance: none; border-radius: 0;
     }
-    .opt-select { flex-shrink: 0; }
+    .opt-select { flex-shrink: 0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 26px; }
     .opt-input { flex: 1; }
     .opt-input:last-child { border-right: none; }
     .opt-select:focus, .opt-input:focus { color: var(--text); }
@@ -236,11 +235,12 @@
     .todo-item.editing { flex-direction: column; gap: 10px; }
     .edit-top { display: flex; gap: 12px; width: 100%; align-items: flex-start; }
     .edit-form { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-    .edit-text { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--orange); padding: 4px 0; color: var(--text); font-size: 0.95rem; font-family: inherit; outline: none; }
+    .edit-text { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--orange); padding: 4px 0; color: var(--text); outline: none; resize: none; overflow: hidden; line-height: 1.45; display: block; }
     .edit-opts-row { display: flex; flex-direction: column; gap: 6px; }
     .edit-opts-top { display: flex; gap: 6px; }
-    .edit-select, .edit-input { background: var(--bg); border: 1px dashed var(--border); padding: 5px 8px; color: var(--text); font-family: inherit; outline: none; }
-    .edit-input { flex: 1; min-width: 120px; }
+    .edit-select, .edit-input { background: var(--bg); border: 1px dashed var(--border); padding: 8px 10px; color: var(--text); outline: none; -webkit-appearance: none; appearance: none; border-radius: 0; }
+    .edit-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+    .edit-input { flex: 1; min-width: 0; }
     .edit-input::placeholder { color: var(--muted); }
     .edit-select option { background: var(--bg2); }
     .edit-btns { display: flex; gap: 8px; }
@@ -265,14 +265,17 @@
     .progress-fill { height: 100%; background: var(--pc, var(--orange)); transition: width 0.4s; }
     .project-card-stats { display: flex; gap: 16px; font-size: 0.8rem; color: var(--muted); }
     .project-card-tasks { border-top: 1px dashed var(--border); margin-top: 12px; padding-top: 10px; display: flex; flex-direction: column; gap: 2px; }
-    .card-task { display: flex; align-items: center; gap: 10px; padding: 7px 4px; border-bottom: 1px dashed var(--border); font-size: 0.88rem; }
+    .card-task { display: flex; align-items: flex-start; gap: 10px; padding: 7px 4px; border-bottom: 1px dashed var(--border); font-size: 0.88rem; }
     .card-task:last-child { border-bottom: none; }
-    .card-task-check { width: 18px; height: 18px; border: 2px solid var(--border); flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: white; transition: all 0.15s; }
+    .card-task-check { width: 18px; height: 18px; border: 2px solid var(--border); flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: white; transition: all 0.15s; margin-top: 1px; }
     .card-task.done .card-task-check { background: var(--green); border-color: var(--green); }
     .card-task.done .card-task-text { text-decoration: line-through; opacity: 0.45; }
     .card-task-priority { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-    .card-task-text { flex: 1; }
-    .card-task-due { font-size: 0.75rem; color: var(--muted); flex-shrink: 0; }
+    .card-task-body { flex: 1; min-width: 0; }
+    .card-task-text { display: block; }
+    .card-task-meta { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; align-items: center; }
+    .card-task-due { font-size: 0.75rem; color: var(--muted); background: var(--bg); padding: 1px 6px; border: 1px dashed var(--border); }
+    .card-task-tag { font-size: 0.7rem; color: var(--orange); background: rgba(249,115,22,0.08); padding: 1px 5px; border: 1px dashed rgba(249,115,22,0.3); }
     .card-task-empty { font-size: 0.85rem; color: var(--muted); padding: 6px 0; }
 
     /* ── Mobile top header ────────────────────────────────────────── */
@@ -328,6 +331,13 @@
       .btn-icon.edit { color: var(--orange); }
       .btn-icon.delete { color: var(--red); }
       .btn-icon:hover, .btn-icon.edit:hover, .btn-icon.delete:hover { border-color: transparent; }
+
+      .add-form.expanded .add-opts { flex-direction: column; align-items: stretch; }
+      .add-form.expanded .opt-select,
+      .add-form.expanded .opt-input { border-right: none; border-bottom: 1px dashed var(--border); width: 100%; flex: none; }
+      .add-form.expanded .opt-tag-wrap { flex: 0 0 auto; border-top: none; border-bottom: none; }
+      .edit-opts-top { flex-direction: column; }
+      .edit-select, .edit-input { width: 100%; min-width: 0; }
     }
   </style>
 </head>
@@ -410,7 +420,7 @@
 
   <form class="add-form" id="addForm">
     <div class="add-row">
-      <input type="text" id="newTodo" placeholder="Add a new task..." autocomplete="off" />
+      <input type="text" id="newTodo" placeholder="Add a new task..." autocomplete="off" onfocus="expandAddForm()" />
       <button type="submit" class="btn-add">+</button>
     </div>
     <div class="add-opts">
@@ -613,8 +623,14 @@
             <div class="card-task${t.done ? ' done' : ''}">
               <div class="card-task-check" onclick="event.stopPropagation();toggleTodo('${t.id}',${t.done})">${t.done ? '✓' : ''}</div>
               ${t.priority ? `<span class="card-task-priority" style="background:${prioColor[t.priority]}"></span>` : ''}
-              <span class="card-task-text">${escHtml(t.text)}</span>
-              ${t.dueDate ? `<span class="card-task-due">${formatDate(t.dueDate)}</span>` : ''}
+              <div class="card-task-body">
+                <span class="card-task-text">${escHtml(t.text)}</span>
+                ${t.dueDate || t.tags?.length ? `<div class="card-task-meta">
+                  ${t.dueDate ? `<span class="card-task-due">${formatDate(t.dueDate)}</span>` : ''}
+                  ${t.dueDate && t.tags?.length ? `<span style="color:var(--muted);font-size:0.75rem">:</span>` : ''}
+                  ${t.tags?.length ? t.tags.map(tag => `<span class="card-task-tag">#${escHtml(tag)}</span>`).join('') : ''}
+                </div>` : ''}
+              </div>
             </div>`).join('')}
       </div>` : '';
       return `<div class="project-card${isOpen ? ' open' : ''}" style="--pc:${escHtml(p.color)}">
@@ -730,13 +746,18 @@
   function tiHideDrop(key) { const d = document.getElementById('tiDrop_' + key); if (d) d.style.display = 'none'; }
 
   // ── Edit ───────────────────────────────────────────────────────────
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+  }
+
   function startEdit(id) {
     didJustStartEdit = true; editingId = id; render();
     setTimeout(() => {
       const todo = todos.find(t => t.id === id);
       tiInit(id, todo?.tags || []);
       const el = document.querySelector('.edit-text');
-      if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+      if (el) { autoResize(el); el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
       didJustStartEdit = false;
     }, 0);
   }
@@ -779,6 +800,7 @@
     const overdue = isOverdue(t.dueDate, t.done);
     const metaParts = [];
     if (t.dueDate) metaParts.push(`<span class="due-date${overdue ? ' overdue' : ''}">${formatDate(t.dueDate)}</span>`);
+    if (t.dueDate && t.tags?.length) metaParts.push(`<span style="color:var(--muted);font-size:0.75rem">:</span>`);
     if (t.tags?.length) t.tags.forEach(tag => metaParts.push(`<span class="tag">#${escHtml(tag)}</span>`));
     if (t.projectId && !activeProjectId) {
       const proj = projects.find(p => p.id === t.projectId);
@@ -792,7 +814,7 @@
           <div class="edit-top">
             <div class="todo-checkbox"></div>
             <div class="edit-form">
-              <input class="edit-text" type="text" value="${escHtml(t.text)}" onkeydown="editKeydown(event,'${t.id}')" />
+              <textarea class="edit-text" rows="1" oninput="autoResize(this)" onkeydown="editKeydown(event,'${t.id}')">${escHtml(t.text)}</textarea>
               <div class="edit-opts-row">
                 <div class="edit-opts-top">
                   <select class="edit-select">
@@ -876,6 +898,7 @@
     document.getElementById('newPriority').value = '';
     setTodayDate();
     tiInit('add', []);
+    document.getElementById('addForm').classList.remove('expanded');
     addTodo(text, priority, dueDate, tags, projectId);
   });
 
@@ -888,6 +911,24 @@
   function setTodayDate() {
     document.getElementById('newDueDate').value = new Date().toISOString().split('T')[0];
   }
+
+  function expandAddForm() {
+    document.getElementById('addForm').classList.add('expanded');
+  }
+
+  function collapseAddForm() {
+    if (!document.getElementById('newTodo').value.trim()) {
+      document.getElementById('addForm').classList.remove('expanded');
+    }
+  }
+
+  document.getElementById('addForm').addEventListener('focusout', e => {
+    setTimeout(() => {
+      if (!document.getElementById('addForm').contains(document.activeElement)) {
+        collapseAddForm();
+      }
+    }, 150);
+  });
 
   load();
   tiInit('add', []);

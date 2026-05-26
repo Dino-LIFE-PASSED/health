@@ -1,4 +1,5 @@
 const todosService = require('../../services/todosService');
+const projectsService = require('../../services/projectsService');
 const dataService = require('../../services/dataService');
 
 // ── Gemini tool declarations ──────────────────────────────────────────────────
@@ -19,7 +20,8 @@ const functionTools = [{
           text: { type: 'STRING', description: 'The task description to add' },
           priority: { type: 'STRING', description: 'Priority level: high, medium, or low. Leave empty if not specified.' },
           dueDate: { type: 'STRING', description: 'Due date in YYYY-MM-DD format. Leave empty if not specified.' },
-          tags: { type: 'ARRAY', items: { type: 'STRING' }, description: 'List of tags/categories for the task. Empty array if none.' }
+          tags: { type: 'ARRAY', items: { type: 'STRING' }, description: 'List of tags/categories for the task. Empty array if none.' },
+          projectId: { type: 'STRING', description: 'Project ID to assign this task to. Call get_projects first to get valid IDs. Leave empty if no project.' }
         },
         required: ['text']
       }
@@ -37,7 +39,7 @@ const functionTools = [{
     },
     {
       name: 'edit_todo',
-      description: 'Edit an existing todo task — update its text, priority, due date, or tags by ID',
+      description: 'Edit an existing todo task — update its text, priority, due date, tags, or project by ID',
       parameters: {
         type: 'OBJECT',
         properties: {
@@ -45,7 +47,8 @@ const functionTools = [{
           text: { type: 'STRING', description: 'New task description' },
           priority: { type: 'STRING', description: 'New priority: high, medium, or low. Empty string to clear.' },
           dueDate: { type: 'STRING', description: 'New due date in YYYY-MM-DD format. Empty string to clear.' },
-          tags: { type: 'ARRAY', items: { type: 'STRING' }, description: 'New list of tags. Empty array to clear.' }
+          tags: { type: 'ARRAY', items: { type: 'STRING' }, description: 'New list of tags. Empty array to clear.' },
+          projectId: { type: 'STRING', description: 'Project ID to assign this task to. Empty string to remove from project.' }
         },
         required: ['id']
       }
@@ -59,6 +62,22 @@ const functionTools = [{
           id: { type: 'STRING', description: 'The todo ID to delete' }
         },
         required: ['id']
+      }
+    },
+    {
+      name: 'get_projects',
+      description: 'Get all projects with their ID, name, and color. Use this before assigning a projectId to a todo.',
+      parameters: { type: 'OBJECT', properties: {} }
+    },
+    {
+      name: 'create_project',
+      description: 'Create a new project. Color is auto-assigned.',
+      parameters: {
+        type: 'OBJECT',
+        properties: {
+          name: { type: 'STRING', description: 'Project name' }
+        },
+        required: ['name']
       }
     },
     {
@@ -109,9 +128,12 @@ function needsSearch(message) {
 function executeTool(name, args) {
   if (name === 'get_todos') {
     const todos = todosService.read();
+    const projects = projectsService.read();
     const active = todos.filter(t => !t.done).length;
     const allTags = [...new Set(todos.flatMap(t => t.tags || []))].sort();
-    return { todos, summary: `${todos.length} total, ${active} active, ${todos.length - active} done`, availableTags: allTags };
+    const projectMap = Object.fromEntries(projects.map(p => [p.id, p.name]));
+    const todosWithProject = todos.map(t => ({ ...t, projectName: projectMap[t.projectId] || '' }));
+    return { todos: todosWithProject, summary: `${todos.length} total, ${active} active, ${todos.length - active} done`, availableTags: allTags, availableProjects: projects.map(p => ({ id: p.id, name: p.name })) };
   }
 
   if (name === 'add_todo') {
@@ -126,6 +148,7 @@ function executeTool(name, args) {
       priority: args.priority || '',
       dueDate: args.dueDate || '',
       tags: Array.isArray(args.tags) ? args.tags : [],
+      projectId: args.projectId || '',
       createdAt: new Date().toISOString()
     };
     todos.push(todo);
@@ -151,6 +174,7 @@ function executeTool(name, args) {
     if (args.priority !== undefined) todos[idx].priority = args.priority;
     if (args.dueDate !== undefined) todos[idx].dueDate = args.dueDate;
     if (args.tags !== undefined) todos[idx].tags = Array.isArray(args.tags) ? args.tags : [];
+    if (args.projectId !== undefined) todos[idx].projectId = args.projectId;
     todosService.write(todos);
     return { success: true, before, after: todos[idx], verification: `Task updated successfully` };
   }
@@ -161,6 +185,28 @@ function executeTool(name, args) {
     if (!target) return { error: `Todo id=${args.id} not found. Call get_todos first to get correct IDs.` };
     todosService.write(todos.filter(t => t.id !== args.id));
     return { success: true, deleted: target, verification: `Task "${target.text}" has been permanently deleted` };
+  }
+
+  if (name === 'get_projects') {
+    const projects = projectsService.read();
+    return { projects, summary: `${projects.length} project(s)` };
+  }
+
+  if (name === 'create_project') {
+    if (!args.name?.trim()) return { error: 'Project name is required.' };
+    const PALETTE = ['#f97316','#22c55e','#3b82f6','#a855f7','#ef4444','#eab308','#06b6d4','#ec4899'];
+    const projects = projectsService.read();
+    const dup = projects.find(p => p.name.toLowerCase() === args.name.trim().toLowerCase());
+    if (dup) return { error: `Project "${args.name}" already exists (id=${dup.id}).` };
+    const project = {
+      id: Date.now().toString() + Math.random().toString(36).slice(2, 6),
+      name: args.name.trim(),
+      color: PALETTE[projects.length % PALETTE.length],
+      createdAt: new Date().toISOString()
+    };
+    projects.push(project);
+    projectsService.write(projects);
+    return { success: true, created: project, verification: `Project "${project.name}" created with id=${project.id}` };
   }
 
   if (name === 'get_weight_history') {
